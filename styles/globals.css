@@ -1,50 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Roboto';
-}
-.css-1xrdjqg-MuiContainer-root {
-    padding: 0 !important;
-
-}
-
-
-.button {
-    border-radius: 4px;
-    text-transform: capitalize;
-    font-size: 20px;
-}
-
-
-.titleInput{
-    padding: 16px 0 0 16px;
-    width: 100%;
-    opacity:.4;
-    margin-top:1rem;
-    font-size: 26px;
-}
-
-
-.css-1vbkg4g-MuiGrid-root {
-    flex-basis: 40%;
-}
-.css-3bsmrm-MuiGrid-root{
-    flex-basis: 60%;
-}
-.css-1plufze-MuiContainer-root{
-    width: 100% !important;
-    padding: 0;
-}
-
-
-
-
-.formReg{
-    padding: 1rem 6rem ;
-    flex-basis: 55%;
-    max-width: 55%;
-}
-.boxReg{
-    width:100%
 }

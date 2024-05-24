@@ -14,8 +14,8 @@ export default function CustomPagination({ count, page, onChange }) {
                 renderItem={(item) => (
                     <PaginationItem
                         components={{
-                            previous: () => <Button variant="text">Previous</Button>,
-                            next: () => <Button variant="text">Next</Button>,
+                            previous: () => <Button variant="text" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>Previous</Button>,
+                            next: () => <Button variant="text" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>Next</Button>,
                         }}
                         {...item}
                         sx={{

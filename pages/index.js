@@ -3,15 +3,23 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import Navbar from "../components/Utility/Navbar";
-import SignIn from "./signIn/SignIn";
-import SetPassword from "./setPassword/SetPassword";
-import Regester from "./regester/Regester";
+import SignIn from "./auth/signIn";
+import SetPassword from "./auth/setPassword";
+import Regester from "./auth/regester";
 import ContactsTable from "@/components/Home/contacts/ContactsTable";
-import ExportViaEmail from "@/components/Home/contacts/ExportViaEmail";
+import ExportViaEmail from "@/components/Home/users/ExportViaEmail";
 import Footer from "@/components/Utility/Footer";
 import UsersTable from "@/components/Home/users/UsersTable"; 
 import CreateNewContact from "@/components/Home/contacts/CreateNewContact";
 import InviteNewUser from "@/components/Home/users/InviteNewUser";
+import EditContact from "@/components/Home/contacts/EditContact";
+import EditUser from './../components/Home/users/EditUser';
+import SendEmail from "@/components/Home/users/SendEmail";
+import ChangePassword from "./auth/changePassword";
+import Activities from "@/components/Home/users/Activities";
+import Dashboard from "@/components/Home/dashboard"; 
+import ContactsBook from "./../components/Home/contacts/ContactBook";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -24,8 +32,11 @@ export default function Home() {
         <link rel="icon" href="" />
       </Head>
       {/* <main > */}
-        {/* <Navbar/> */}
+        <Navbar/>
+        {/* <SendEmail/> */}
+        {/* <EditUser/> */}
         {/* <InviteNewUser/> */}
+        {/* <EditContact/> */}
         {/* <CreateNewContact/> */}
         {/* <UsersTable/> */}
         {/* <ExportViaEmail/> */}
@@ -33,6 +44,10 @@ export default function Home() {
         {/* <SignIn/> */}
         {/* <Regester/>  */}
         {/* <SetPassword/> */}
+        {/* <ChangePassword/> */}
+        {/* <Activities/> */}
+        {/* <Dashboard/> */}
+        {/* <ContactsBook/> */}
       {/* </main> */}
     </>
   );

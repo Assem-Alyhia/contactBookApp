@@ -17,7 +17,8 @@ import {
 } from '@mui/material';
 import CustomPagination from '../../Utility/CustomPagination'; // استيراد مكون الباجينيشن
 import axiosInstance from '../../../pages/api/axiosInstance';
-import Footer from '../../Utility/Footer';
+import Footer from '@/components/Utility/Footer';
+
 
 const columns = [
     { id: 'id', label: 'ID' },
@@ -66,7 +67,7 @@ export default function UsersTable() {
     };
 
     return (
-        <Box sx={{ marginTop: '2rem' }}>
+        <Box sx={{ marginTop: '1rem' }}>
             <Container maxWidth="lg">
                 <Typography variant="h6" gutterBottom sx={{fontWeight: 'bold'}}>
                     Home / Users
@@ -82,10 +83,10 @@ export default function UsersTable() {
                         sx={{ minHeight: '35px' }}
                     />
                     <Box>
-                        <Button variant="contained" color="error" sx={{ mr: 1 , textTransform: 'capitalize'}}>
+                        <Button variant="contained" color="error"  sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Delete
                         </Button>
-                        <Button variant="contained" color="primary" sx={{ mr: 1 , textTransform: 'capitalize'}}>
+                        <Button variant="contained" color="primary" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Invite New User
                         </Button>
                     </Box>
@@ -145,7 +146,7 @@ export default function UsersTable() {
                     </>
                 )}
             </Container>
-            <Footer />
+            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
         </Box>
     );
 }

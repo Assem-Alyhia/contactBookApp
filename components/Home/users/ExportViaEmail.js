@@ -17,10 +17,10 @@ import {
     Alert,
 } from '@mui/material';
 import axiosInstance from '../../../pages/api/axiosInstance';
-import Footer from '../../Utility/Footer';
 import CustomPagination from '../../Utility/CustomPagination';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import Footer from '@/components/Utility/Footer';
 
 const columns = [
     { id: 'id', label: 'ID' },
@@ -80,7 +80,7 @@ export default function ExportViaEmail() {
     }
 
     return (
-        <Box sx={{ marginTop: '2rem' }}>
+        <Box sx={{ marginTop: '1rem' }}>
             <Container maxWidth="lg">
                 <Typography variant="h6" gutterBottom sx={{fontWeight: 'bold'}}>
                     Home / Contacts / Export via email
@@ -105,7 +105,7 @@ export default function ExportViaEmail() {
                             size="small"
                             sx={{ mr: 2, minHeight: '35px' }}
                         />
-                        <Button variant="contained" color="primary" onClick={handleSendEmail}>
+                        <Button variant="contained" color="primary" onClick={handleSendEmail} sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Send
                         </Button>
                     </Box>
@@ -143,6 +143,7 @@ export default function ExportViaEmail() {
                                     <TableCell>{contact.phone}</TableCell>
                                     <TableCell>
                                         <Button
+                                            sx={{ mr: 1,width:93, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
                                             variant="contained"
                                             color={contact.status === 'Active' ? 'success' : 'default'}
                                         >
@@ -159,7 +160,7 @@ export default function ExportViaEmail() {
                 </TableContainer>
                 <CustomPagination count={count} page={page} onChange={handlePageChange} />
             </Container>
-            <Footer />
+            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
         </Box>
     );
 }

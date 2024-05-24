@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import Footer from '../../Utility/Footer';
+import Footer from '@/components/Utility/Footer';
 import CustomPagination from '../../Utility/CustomPagination';
 import axiosInstance from '../../../pages/api/axiosInstance'; // استيراد axiosInstance
 
@@ -69,7 +69,7 @@ export default function ContactsTable() {
     };
 
     return (
-        <Box sx={{ marginTop : '2rem'}}>
+        <Box sx={{ marginTop : '1rem'}}>
             <Container maxWidth="lg" >
                 <Typography variant="h6" gutterBottom sx={{fontWeight: 'bold'}}>
                     Home / Contacts
@@ -85,16 +85,16 @@ export default function ContactsTable() {
                         sx={{ minHeight: '35px' }}
                     />
                     <Box>
-                        <Button variant="contained" color="error" sx={{ mr: 1 }}>
+                        <Button variant="contained" color="error" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Delete
                         </Button>
-                        <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                        <Button variant="contained" color="primary" sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Export to
                         </Button>
-                        <Button variant="contained" color="primary" sx={{ mr: 1 }}>
+                        <Button variant="contained" color="primary" sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Send Email
                         </Button>
-                        <Button variant="contained" color="success">
+                        <Button variant="contained" color="success" sx={{ mr: 1,width:215, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Create New
                         </Button>
                     </Box>
@@ -160,7 +160,7 @@ export default function ContactsTable() {
                     </>
                 )}
             </Container>
-            <Footer/>
+            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
         </Box>
     );
 }

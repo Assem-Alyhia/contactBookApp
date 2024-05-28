@@ -32,7 +32,11 @@ export default function Home() {
         <link rel="icon" href="" />
       </Head>
       {/* <main > */}
-        <Navbar/>
+
+        <SignIn/>
+
+
+
         {/* <SendEmail/> */}
         {/* <EditUser/> */}
         {/* <InviteNewUser/> */}
@@ -41,13 +45,15 @@ export default function Home() {
         {/* <UsersTable/> */}
         {/* <ExportViaEmail/> */}
         {/* <ContactsTable/> */}
-        {/* <SignIn/> */}
+
         {/* <Regester/>  */}
         {/* <SetPassword/> */}
         {/* <ChangePassword/> */}
-        {/* <Activities/> */}
+        
         {/* <Dashboard/> */}
+        {/* <Activities/> */}
         {/* <ContactsBook/> */}
+        
       {/* </main> */}
     </>
   );

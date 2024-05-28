@@ -31,11 +31,11 @@ const rows = [
 
 export default function ContactBook() {
     return (
-        <Box>
-        <Container component="main" maxWidth="md"  sx={{ display: 'flex', flexDirection: 'column', padding: '0 !important' }}>
+        <Box >
+        <Container component="main" maxWidth="md"  sx={{ display: 'flex', flexDirection: 'column', padding: '0 !important' ,width : '583px' , margin:'auto'}}>
             <TableContainer component={Paper}  sx={{ boxShadow: '0px 3px 15px rgba(0,0,0,0.2)' , padding : '0 1rem' ,margin:'3rem 0 0 0'}}>
                 <Box sx={{ margin: '2rem auto', textAlign: 'center' }}>
-                    <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
+                    <Image src={logoW} alt="Contact Book Logo" width={100} height={100} style={{color:'#4E73DF'}}/>
                 </Box>
                 <Table aria-label="contact book table" sx={{marginBottom :'5rem'}} >
                     <TableHead sx={{ backgroundColor: '#000' }}>
@@ -53,7 +53,7 @@ export default function ContactBook() {
                             <TableRow key={row.id}>
                                 <TableCell sx={{ borderBottom: 'none', fontSize: '12px', padding: '4px 8px' }}>{row.id}</TableCell>
                                 <TableCell sx={{ borderBottom: 'none', padding: '4px 8px' }}>
-                                    <Avatar alt={row.firstName} src={row.image} />
+                                    <Avatar alt={row.firstName} src={row.image} sx={{width:'24px' , height:'24px' , fontSize:'10px' , margin:'auto'}}/>
                                 </TableCell>
                                 <TableCell sx={{ borderBottom: 'none', fontSize: '12px', padding: '4px 8px' }}>{row.firstName}</TableCell>
                                 <TableCell sx={{ borderBottom: 'none', fontSize: '12px', padding: '4px 8px' }}>{row.lastName}</TableCell>
@@ -68,7 +68,7 @@ export default function ContactBook() {
                 </Typography>
             </TableContainer>
         </Container>
-        <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
+        <Footer  color = '#000' gap = '0 40% 0 10%' opacity='0.3' mdPosition='auto'/>
         </Box>
     );
 }

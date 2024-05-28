@@ -9,6 +9,7 @@ import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import TagIcon from '@mui/icons-material/Tag';
 import Footer from '@/components/Utility/Footer';
+import Link from 'next/link'
 export default function SendEmail() {
     return (
         <Box sx={{ marginTop: '1rem' }}>
@@ -18,11 +19,13 @@ export default function SendEmail() {
                 </Typography>
                 <Box borderBottom={2} mb={2} sx={{ opacity: 0.2 }} />
                 <Box display="flex" justifyContent="flex-end" mb={3} sx={{ paddingLeft: '24px' }}>
-                    <Button variant="contained" color="error"
-                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                    >
-                        Discard
-                    </Button>
+                    <Link href='/contacts/contactsTable'>
+                        <Button variant="contained" color="error"
+                            sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                        >
+                            Discard
+                        </Button>
+                    </Link>
                     <Button variant="contained" color="primary"
                         sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
                     >

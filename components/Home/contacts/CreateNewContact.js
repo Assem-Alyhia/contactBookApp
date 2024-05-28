@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Box, Typography, TextField, Button, Avatar, Grid } from '@mui/material';
 import Footer from '@/components/Utility/Footer';
-
+import Link from 'next/link'
 export default function CreateNewContact() {
     return (
         <Box sx={{ marginTop: '1rem' }}>
@@ -170,23 +170,27 @@ export default function CreateNewContact() {
                                     />
                                 </Grid>
                                 <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '16px' }}>
-                                    <Button variant="contained" color="primary" 
-                                     sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                                    >
-                                        Create
-                                    </Button>
-                                    <Button variant="outlined" 
-                                    sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                                    >
-                                        Back
-                                    </Button>
+                                    <Link  href='/contacts/contactsTable'>
+                                        <Button variant="contained" color="primary" 
+                                        sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                        >
+                                            Create
+                                        </Button>
+                                    </Link>
+                                    <Link  href='/contacts/contactsTable'>
+                                        <Button variant="outlined" 
+                                        sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                        >
+                                            Back
+                                        </Button>
+                                    </Link>
                                 </Box>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Box>
             </Container>
-            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
+            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' mdPosition='auto'/>
         </Box>
     );
 }

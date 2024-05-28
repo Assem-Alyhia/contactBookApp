@@ -5,9 +5,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axiosInstance from '../../../pages/api/axiosInstance';
 import Footer from '@/components/Utility/Footer';
+import Link from 'next/link';
 
 export default function EditContact() {
-    const { id } = useParams(); // استخدم useParams للحصول على الـ ID الديناميكي من الـ URL
+    const { id } = useParams(); 
     const [contact, setContact] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
@@ -15,7 +16,7 @@ export default function EditContact() {
     useEffect(() => {
         const fetchContact = async () => {
             try {
-                const response = await axiosInstance.get(`/api/Contacts/${id}`); // استخدم الـ ID الديناميكي هنا
+                const response = await axiosInstance.get(`/api/Contacts/${id}`); 
                 if (response.data) {
                     setContact(response.data);
                     setIsActive(response.data.active);
@@ -29,11 +30,9 @@ export default function EditContact() {
         };
         fetchContact();
     }, [id]);
-
     if (isLoading) {
         return <div>Loading...</div>;
     }
-
     return (
         <Box sx={{ marginTop: '1rem' }}>
             <Container maxWidth="lg">
@@ -41,7 +40,6 @@ export default function EditContact() {
                     Home / Contacts / {contact.firstName} {contact.lastName}
                 </Typography>
                 <Box borderBottom={2} mb={2} sx={{ opacity: 0.2 }} />
-
                 <Box sx={{ backgroundColor: '#fff', borderRadius: '5px', boxShadow: '0px 3px 15px #00000012' }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ border: '1px solid #E0E0E0', fontSize: '20px', fontWeight: '600', background: '#F7F7F7 0% 0% no-repeat padding-box', padding: '.7rem', borderRadius: '5px' }}>
                         <Typography variant="h6" sx={{fontSize:'20px' ,  fontWeight: '600'}}> 
@@ -216,10 +214,12 @@ export default function EditContact() {
                                     sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                                         Edit
                                     </Button>
-                                    <Button variant="outlined" startIcon={<ArrowBackIcon />} 
-                                    sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                                        Back
-                                    </Button>
+                                    <Link href='/contacts/contactsTable'>
+                                        <Button variant="outlined" startIcon={<ArrowBackIcon />} 
+                                        sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
+                                            Back
+                                        </Button>
+                                    </Link>
                                 </Box>
                             </Grid>
                         </Grid>

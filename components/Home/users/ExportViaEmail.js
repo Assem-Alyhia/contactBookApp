@@ -16,6 +16,9 @@ import {
     Checkbox,
     Alert,
 } from '@mui/material';
+
+
+import Link from 'next/Link';
 import axiosInstance from '../../../pages/api/axiosInstance';
 import CustomPagination from '../../Utility/CustomPagination';
 import StarIcon from '@mui/icons-material/Star';
@@ -151,7 +154,9 @@ export default function ExportViaEmail() {
                                         </Button>
                                     </TableCell>
                                     <TableCell>
-                                        <Button variant="contained">View</Button>
+                                        <Link href="/contacts/editContact" >
+                                            <Button variant="contained">View</Button>
+                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             ))}

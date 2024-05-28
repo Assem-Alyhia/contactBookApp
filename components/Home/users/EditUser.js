@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import { Container, Box, Typography, TextField, Button, Grid, MenuItem, Switch, FormControlLabel } from '@mui/material';
 import axiosInstance from '../../../pages/api/axiosInstance';
 import Footer from '@/components/Utility/Footer';
+import Link from 'next/link';
+
 export default function EditUser() {
-    const { id } = useParams(); // استخدام useParams للحصول على الـ ID الديناميكي من الـ URL
+    const { id } = useParams(); 
     const [user, setUser] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
@@ -12,7 +14,7 @@ export default function EditUser() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axiosInstance.get(`/api/Contacts/${id}`); // استخدام الـ ID الديناميكي هنا
+                const response = await axiosInstance.get(`/api/Contacts/${id}`); 
                 if (response.data) {
                     setUser(response.data);
                     setIsActive(response.data.active);
@@ -143,20 +145,22 @@ export default function EditUser() {
                         </Grid>
                         <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' }}>
                             <Button variant="contained" color="primary"
-                                sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
                             >
                                 Save
                             </Button>
-                            <Button variant="outlined"
-                                sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                            >
-                                Cancel
-                            </Button>
+                            <Link href='/users/usersTable' passHref>
+                                <Button variant="outlined"
+                                    sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                >
+                                    Back
+                                </Button>
+                            </Link>
                         </Box>
                     </Grid>
                 </Box>
             </Container>
-            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
+            <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
         </Box>
     );
 }

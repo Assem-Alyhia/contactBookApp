@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Layout from "@/components/Utility/Layout";
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -21,11 +22,15 @@ const theme = createTheme({
   },
 });
 
-export default function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps, ...appProps }) {
+  const getLayout = Component.getLayout || ((page) => page);
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Component {...pageProps} />
-    </ThemeProvider>
+        <CssBaseline />
+        <Layout pathname={appProps.router.pathname}>
+          {getLayout(<Component {...pageProps} />)}
+        </Layout>
+      </ThemeProvider>
+    
   );
 }

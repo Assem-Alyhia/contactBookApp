@@ -15,6 +15,7 @@ import {
     Avatar,
     Checkbox,
 } from '@mui/material';
+import Link from 'next/link'
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Footer from '@/components/Utility/Footer';
@@ -91,12 +92,16 @@ export default function ContactsTable() {
                         <Button variant="contained" color="primary" sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Export to
                         </Button>
-                        <Button variant="contained" color="primary" sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                            Send Email
-                        </Button>
-                        <Button variant="contained" color="success" sx={{ mr: 1,width:215, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                            Create New
-                        </Button>
+                        <Link href='/users/sendEmail'>
+                            <Button variant="contained" color="primary" sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
+                                Send Email
+                            </Button>
+                        </Link>
+                        <Link href='/contacts/createNewContact'>
+                            <Button variant="contained" color="success" sx={{ mr: 1,width:215, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
+                                Create New
+                            </Button>
+                        </Link>
                     </Box>
                 </Box>
                 {isLoading ? (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Box, Typography, TextField, Button, Grid, MenuItem } from '@mui/material';
 import Footer from '@/components/Utility/Footer';
+import Link from 'next/link'
 
 export default function InviteNewUser() {
     return (
@@ -101,16 +102,20 @@ export default function InviteNewUser() {
                             </TextField>
                         </Grid>
                         <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px'  }}>
-                            <Button variant="contained" color="primary"
-                            sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                            >
-                                Invite
-                            </Button>
-                            <Button variant="outlined" 
-                            sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                            >
-                                Cancel
-                            </Button>
+                            <Link href='/auth/setPassword'>
+                                <Button variant="contained" color="primary"
+                                sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                >
+                                    Invite
+                                </Button>
+                            </Link>
+                            <Link href='/users/usersTable'>
+                                <Button variant="outlined" 
+                                sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                >
+                                    Cancel
+                                </Button>
+                            </Link>
                         </Box>
                     </Grid>
                 </Box>

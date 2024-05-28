@@ -1,7 +1,6 @@
 import * as React from 'react';
-import  { useState } from 'react';
-
-import {   
+import { useState } from 'react';
+import {
     Container,
     Box,
     Grid,
@@ -10,7 +9,6 @@ import {
     FormControlLabel,
     Checkbox,
     Button,
-    Link,
     MenuItem,
     IconButton,
     InputAdornment,
@@ -18,9 +16,12 @@ import {
     OutlinedInput,
     InputLabel,
 } from '@mui/material';
+import Link from 'next/link'
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Footer from '@/components/Utility/Footer';
-
+import Image from 'next/image';
+import logoW from '../../../public/images/logo.svg';
+import img from '../../../public/images/1.jpg';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -30,37 +31,43 @@ export default function Register() {
     };
 
     return (
-        <Container component="main" maxWidth="xl" sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between' ,padding: '0 !important'}}>
-            <Grid container sx={{ flexGrow: 1, padding: 0 }}>
-                <Grid
-                    item
-                    xs={false}
-                    sm={4}
-                    md={4}
-                    sx={{
-                        backgroundImage: 'url(images/1.jpg)',
-                        backgroundRepeat: 'no-repeat',
-                        backgroundColor: (t) =>
-                            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                    }}
-                />
-                <Grid className='formReg' item xs={12} sm={8} md={8} component={Box} sx={{padding:'2.5rem 8rem'}}>
-                    <Box sx={{
-                        width: "100%",
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'start', justifyContent: 'center'
-                    }}>
-                        <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: '30px' }}>
+        <Box>
+            <Container component="main" maxWidth="xl" sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+                <Grid container sx={{ flexGrow: 1, padding: 0 }}>
+                    <Grid
+                        item
+                        xs={false}
+                        sm={4}
+                        md={4}
+                        sx={{
+                            position: 'relative',
+                            display: { xs: 'none', md: 'block' },
+                        }}
+                    >
+                        <Image
+                            src={img}
+                            alt="Background Image"
+                            layout="fill"
+                            objectFit="cover"
+                            quality={100}
+                            style={{
+                                backgroundColor: (t) =>
+                                    t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+                            }}
+                        />
+                    </Grid>
+                    <Grid className='formReg' item xs={12} sm={8} md={8} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '2.5rem 8rem' } }}>
+                        <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
+                            <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
+                        </Box>
+                        <Typography component="h1" variant="h5" sx={{ display: { xs: 'none', md: 'block' }, fontWeight: 'bold', fontSize: '30px' }}>
                             Create Account
                         </Typography>
 
-                        <Box component="form" noValidate sx={{ mt: 1 }} className='boxReg'>
+                        <Box component="form" noValidate sx={{ mt: 1, width: '100%' }} className='boxReg'>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} sm={12}>
-                                    <Typography component="h2" variant="h5" className='titleInput' sx={{ opacity:'.4',fontSize:'20px' }}>
+                                    <Typography component="h2" variant="h5" className='titleInput' sx={{ opacity: '.4', fontSize: '20px' }}>
                                         Account details
                                     </Typography>
                                 </Grid>
@@ -102,32 +109,32 @@ export default function Register() {
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth variant="outlined" size="small" required>
-                                    <InputLabel htmlFor="password">Password</InputLabel>
-                                    <OutlinedInput
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        autoComplete="new-password"
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    edge="end"
-                                                    sx={{ padding: 0 , marginRight:'2px'}}
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                        label="Password"
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </FormControl>
+                                    <FormControl fullWidth variant="outlined" size="small" required>
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            autoComplete="new-password"
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        edge="end"
+                                                        sx={{ padding: 0, marginRight: '2px' }}
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                            label="Password"
+                                            sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                        />
+                                    </FormControl>
                                 </Grid>
 
                                 <Grid item xs={12} sm={12}>
-                                    <Typography component="h2" variant="h5" className='titleInput' sx={{ opacity:'.4',fontSize:'20px' }}>
+                                    <Typography component="h2" variant="h5" className='titleInput' sx={{ opacity: '.4', fontSize: '20px' }}>
                                         Billing details
                                     </Typography>
                                 </Grid>
@@ -242,8 +249,8 @@ export default function Register() {
                                         <MenuItem value="LE">Lebanon</MenuItem>
                                     </TextField>
                                 </Grid>
-                                <Grid item xs={12} >
-                                    <FormControlLabel 
+                                <Grid item xs={12}>
+                                    <FormControlLabel
                                         control={<Checkbox value="terms" color="primary" />}
                                         label="I agree to the website terms and conditions"
                                         sx={{ '& .MuiFormControlLabel-label': { fontSize: '14px' } }}
@@ -254,22 +261,22 @@ export default function Register() {
                                 type="submit"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3, mb: 2, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                sx={{ mt: 1, mb: 1, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
                             >
                                 Register
                             </Button>
                             <Grid container justifyContent="flex-end">
                                 <Grid item sx={{ margin: 'auto' }}>
-                                    <Link href="#" variant="body2">
+                                    <Link href="/auth/signIn" variant="body2">
                                         {"Sign in instead"}
                                     </Link>
                                 </Grid>
                             </Grid>
                         </Box>
-                    </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Footer  color = '#fff' gap = ' 0 10%' />
-        </Container>
+                <Footer color='#fff' gap='0 10%' />
+            </Container>
+        </Box>
     );
 }

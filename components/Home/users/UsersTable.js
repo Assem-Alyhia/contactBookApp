@@ -18,6 +18,7 @@ import {
 import CustomPagination from '../../Utility/CustomPagination'; // استيراد مكون الباجينيشن
 import axiosInstance from '../../../pages/api/axiosInstance';
 import Footer from '@/components/Utility/Footer';
+import Link from 'next/link'
 
 
 const columns = [
@@ -86,9 +87,11 @@ export default function UsersTable() {
                         <Button variant="contained" color="error"  sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
                             Delete
                         </Button>
-                        <Button variant="contained" color="primary" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                            Invite New User
-                        </Button>
+                        <Link href='/users/inviteNewUser'>
+                            <Button variant="contained" color="primary" sx={{ mr: 1, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
+                                Invite New User
+                            </Button>
+                        </Link>
                     </Box>
                 </Box>
                 {isLoading ? (

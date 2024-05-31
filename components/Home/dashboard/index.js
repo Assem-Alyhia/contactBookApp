@@ -45,35 +45,35 @@ export default function Dashboard() {
                     <Grid item xs={12} md={6}>
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={12} md={6}>
-                                <Paper sx={{ padding: '2rem', textAlign: 'start', backgroundColor: '#00AC69', color: '#fff', position: 'relative' }}>
+                                <Paper sx={{ padding: '1.5rem', textAlign: 'start', backgroundColor: '#00AC69', color: '#fff', position: 'relative' }}>
                                     <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>101</Typography>
                                     <Typography sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>Active</Typography>
                                     <Typography variant="caption" sx={{ display: 'flex', fontSize: { xs: '0.6rem', md: '0.8rem' } }}><ArrowUpward sx={{ width: '10px', marginRight: '5px' }} /> 3% from last month</Typography>
-                                    <ArrowUpward sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.2 }} />
+                                    <ArrowUpward sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.5 ,background:'white',color:'#00AC69',borderRadius:'50%',padding:'7px'}} />
                                 </Paper>
                             </Grid>
                             <Grid item xs={12} sm={12} md={6}>
-                                <Paper sx={{ padding: '2rem', textAlign: 'start', backgroundColor: '#FC766A', color: '#fff', position: 'relative' }}>
+                                <Paper sx={{ padding: '1.5rem', textAlign: 'start', backgroundColor: '#FC766A', color: '#fff', position: 'relative' }}>
                                     <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>101</Typography>
                                     <Typography sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>Inactive</Typography>
                                     <Typography variant="caption" sx={{ display: 'flex', fontSize: { xs: '0.6rem', md: '0.8rem' } }}><ArrowUpward sx={{ width: '10px', marginRight: '5px' }} /> 3% from last month</Typography>
-                                    <ArrowDownward sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.2 }} />
+                                    <ArrowDownward sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.5 ,background:'white',color:'#FC766A',borderRadius:'50%',padding:'7px'}} />
                                 </Paper>
                             </Grid>
                             <Grid item xs={12} sm={12} md={6}>
-                                <Paper sx={{ padding: '2rem', textAlign: 'start', backgroundColor: '#2C3E50', color: '#fff', position: 'relative' }}>
+                                <Paper sx={{ padding: '1.5rem', textAlign: 'start', backgroundColor: '#2C3E50', color: '#fff', position: 'relative' }}>
                                     <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>101</Typography>
                                     <Typography sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>With email</Typography>
                                     <Typography variant="caption" sx={{ display: 'flex', fontSize: { xs: '0.6rem', md: '0.8rem' } }}><ArrowUpward sx={{ width: '10px', marginRight: '5px' }} /> 3% from last month</Typography>
-                                    <Email sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.2 }} />
+                                    <Email sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.5 ,background:'white',color:'#2C3E50',borderRadius:'50%',padding:'7px'}} />
                                 </Paper>
                             </Grid>
                             <Grid item xs={12} sm={12} md={6}>
-                                <Paper sx={{ padding: '2rem', textAlign: 'start', backgroundColor: '#5B84B1', color: '#fff', position: 'relative' }}>
+                                <Paper sx={{ padding: '1.5rem', textAlign: 'start', backgroundColor: '#5B84B1', color: '#fff', position: 'relative' }}>
                                     <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>101</Typography>
                                     <Typography sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>Without email</Typography>
                                     <Typography variant="caption" sx={{ display: 'flex', fontSize: { xs: '0.6rem', md: '0.8rem' } }}><ArrowUpward sx={{ width: '10px', marginRight: '5px' }} /> 3% from last month</Typography>
-                                    <Close sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.2 }} />
+                                    <Close sx={{ position: 'absolute', top: '10px', right: '10px', fontSize: '40px', opacity: 0.5 ,background:'white',color:'#5B84B1',borderRadius:'50%' ,padding:'7px'}} />
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -86,11 +86,11 @@ export default function Dashboard() {
                                     <TableBody>
                                         {rows.map((row) => (
                                             <TableRow key={row.contact}>
-                                                <TableCell component="th" scope="row" sx={{ borderBottom: 'none', fontSize: '12px', padding: '5px', width: '60%' }}>
+                                                <TableCell component="th" scope="row" sx={{ borderBottom: 'none', fontSize: '12px', padding: '5px', width: '40%' }}>
                                                     {row.contact}
                                                 </TableCell>
                                                 <TableCell align="left" sx={{ borderBottom: 'none', opacity: 0.4, fontSize: '10px', padding: '5px' }}>{row.date}</TableCell>
-                                                <TableCell align="left" sx={{ borderBottom: 'none', display: 'flex', alignItems: 'center', opacity: 0.4, fontSize: '10px', padding: '5px' }}>
+                                                <TableCell align="left" sx={{ borderBottom: 'none', display: 'flex', alignItems: 'center', opacity: 0.4, fontSize: '10px', padding: '10px  0 0 0 ' }}>
                                                     <span style={{ height: '7px', width: '7px', opacity: 1, borderRadius: '50%', backgroundColor: row.action === 'Add' ? 'green' : row.action === 'Delete' ? 'red' : row.action === 'Update' ? 'orange' : row.action === 'Access' ? 'blue' : 'grey', marginRight: '0.5rem' }}></span>
                                                     {row.action}
                                                 </TableCell>

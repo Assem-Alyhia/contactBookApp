@@ -19,7 +19,7 @@ import ChangePassword from "./auth/changePassword";
 import Activities from "@/components/Home/users/Activities";
 import Dashboard from "@/components/Home/dashboard"; 
 import ContactsBook from "./../components/Home/contacts/ContactBook";
-
+import CompanyProfile from "@/components/Home/company";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
@@ -33,13 +33,19 @@ export default function Home() {
       </Head>
       {/* <main > */}
 
-        <SignIn/>
+        {/* <SignIn/> */}
 
 
-
+        {/* <CompanyProfile/> */}
         {/* <SendEmail/> */}
         {/* <EditUser/> */}
+
+
+
         {/* <InviteNewUser/> */}
+
+
+
         {/* <EditContact/> */}
         {/* <CreateNewContact/> */}
         {/* <UsersTable/> */}

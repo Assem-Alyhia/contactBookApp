@@ -1,19 +1,52 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Box, Typography, Button, Grid, OutlinedInput, InputLabel, FormControl, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Footer from '@/components/Utility/Footer';
 import Image from 'next/image';
 import logoW from '../../../public/images/logo.svg';
 import img from '../../../public/images/1.jpg';
+import { useSetPasswordMutation } from '@/pages/api/setPassword/setPassword';
 
 export default function SetPassword() {
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [formData, setFormData] = useState({ newPassword: '', confirmPassword: '' });
+    const router = useRouter();
+    const { id, code } = router.query; // الحصول على id و code من رابط الصفحة
+
+    const { mutate, isLoading, isError, isSuccess } = useSetPasswordMutation();
+
+    useEffect(() => {
+        if (!id || !code) {
+            console.error('ID and code are required');
+        }
+    }, [id, code]);
 
     const handleClickShowPassword = () => setShowPassword((prev) => !prev);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (formData.newPassword !== formData.confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        mutate({ id, code, newPassword: formData.newPassword }, {
+            onSuccess: () => {
+                router.push('/dashboard');
+            },
+            onError: (error) => {
+                console.error('Error setting new password: ', error);
+            }
+        });
+    };
 
     return (
         <Box>
@@ -45,16 +78,16 @@ export default function SetPassword() {
                         <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
                             <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
                         </Box>
-                        <Typography component="h1" variant="h5" sx={{display: { xs: 'none', md: 'block' }, fontWeight: 'bold', fontSize: '30px' }}>
+                        <Typography component="h1" variant="h5" sx={{ display: { xs: 'none', md: 'block' }, fontWeight: 'bold', fontSize: '30px' }}>
                             Set a Password
                         </Typography>
-                        <Box component="form" noValidate sx={{ mt: 1, width: '100%' }}>
+                        <Box component="form" noValidate sx={{ mt: 1, width: '100%' }} onSubmit={handleSubmit}>
                             <FormControl fullWidth variant="outlined" size="small" required margin="normal">
                                 <InputLabel htmlFor="password">Password</InputLabel>
                                 <OutlinedInput
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    name="password"
+                                    name="newPassword"
                                     autoComplete="current-password"
                                     sx={{ "& .MuiOutlinedInput-root": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
                                     endAdornment={
@@ -70,6 +103,7 @@ export default function SetPassword() {
                                         </InputAdornment>
                                     }
                                     label="Password"
+                                    onChange={handleChange}
                                 />
                             </FormControl>
                             <FormControl fullWidth variant="outlined" size="small" required margin="normal">
@@ -77,7 +111,7 @@ export default function SetPassword() {
                                 <OutlinedInput
                                     id="confirm-password"
                                     type={showConfirmPassword ? 'text' : 'password'}
-                                    name="confirm-password"
+                                    name="confirmPassword"
                                     autoComplete="current-password"
                                     sx={{ "& .MuiOutlinedInput-root": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
                                     endAdornment={
@@ -93,18 +127,20 @@ export default function SetPassword() {
                                         </InputAdornment>
                                     }
                                     label="Confirm Password"
+                                    onChange={handleChange}
                                 />
                             </FormControl>
-                            <Link href='/dashboard'>
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={{ mt: 3, mb: 2, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                >
-                                    Reset Password
-                                </Button>
-                            </Link>
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Setting Password...' : 'Set Password'}
+                            </Button>
+                            {isError && <div>Error setting new password. Please try again.</div>}
+                            {isSuccess && <div>Password set successfully!</div>}
                         </Box>
                     </Grid>
                 </Grid>

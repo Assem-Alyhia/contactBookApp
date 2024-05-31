@@ -20,7 +20,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Footer from '@/components/Utility/Footer';
 import CustomPagination from '../../Utility/CustomPagination';
-import axiosInstance from '../../../pages/api/axiosInstance'; // استيراد axiosInstance
+import { useContactsQuery } from '@/pages/api/contacts/getContacts';
 
 const columns = [
     { id: 'id', label: 'ID' },
@@ -35,31 +35,13 @@ const columns = [
 ];
 
 export default function ContactsTable() {
-    const [contacts, setContacts] = useState([]);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchContactsData();
-    }, [page, search]);
+    const  {isLoading ,  data}= useContactsQuery();
 
-    const fetchContactsData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axiosInstance.get('/api/Companies', {
-                params: { page, search }
-            });
-            setContacts(response.data.contacts || []);
-            setTotalPages(response.data.totalPages || 1);
-        } catch (error) {
-            console.error('Error fetching data: ', error);
-            setContacts([]);
-            setTotalPages(1);
-        }
-        setIsLoading(false);
-    };
+
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
@@ -123,7 +105,7 @@ export default function ContactsTable() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {contacts.length > 0 ? contacts.map((contact) => (
+                                    {data.length > 0 ? data.map((contact) => (
                                         <TableRow key={contact.id}>
                                             <TableCell padding="checkbox">
                                                 <Checkbox />
@@ -148,7 +130,9 @@ export default function ContactsTable() {
                                                 </Button>
                                             </TableCell>
                                             <TableCell>
-                                                <Button variant="contained">View</Button>
+                                            <Link href={`/contacts/editContact?id=${user.id}`} passHref>
+                                                    <Button variant="contained">View</Button>
+                                                </Link>
                                             </TableCell>
                                         </TableRow>
                                     )) : (

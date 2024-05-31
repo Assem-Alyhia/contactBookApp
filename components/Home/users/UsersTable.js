@@ -19,8 +19,8 @@ import CustomPagination from '../../Utility/CustomPagination'; // استيراد
 import axiosInstance from '../../../pages/api/axiosInstance';
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link'
-
-
+import { useQuery} from '@tanstack/react-query';
+import {useUsersQuery} from '../../../pages/api/users/getUsers';
 const columns = [
     { id: 'id', label: 'ID' },
     { id: 'firstName', label: 'First Name' },
@@ -32,32 +32,11 @@ const columns = [
 ];
 
 export default function UsersTable() {
-    const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetchUsersData();
-    }, [page, search]);
-
-    const fetchUsersData = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axiosInstance.get('/api/Users', {
-                params: { page, search }
-            });
-            setUsers(response.data.users || []);
-            setTotalPages(Math.ceil(response.data.total / 5)); // تحديث عدد الصفحات بناءً على البيانات
-        } catch (error) {
-            console.error('Error fetching data: ', error);
-            setUsers([]);
-            setTotalPages(1);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+const  {isLoading ,  data} = useUsersQuery();
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
@@ -113,7 +92,7 @@ export default function UsersTable() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {users.length > 0 ? users.map((user) => (
+                                    {data && data.length > 0 ? data.map((user) => (
                                         <TableRow key={user.id}>
                                             <TableCell padding="checkbox">
                                                 <Checkbox />
@@ -122,7 +101,7 @@ export default function UsersTable() {
                                             <TableCell>{user.firstName}</TableCell>
                                             <TableCell>{user.lastName}</TableCell>
                                             <TableCell>{user.email}</TableCell>
-                                            <TableCell>{user.phone}</TableCell>
+                                            <TableCell>{user.phoneNumber}</TableCell>
                                             <TableCell>
                                                 <Button
                                                     variant="contained"
@@ -132,7 +111,9 @@ export default function UsersTable() {
                                                 </Button>
                                             </TableCell>
                                             <TableCell>
-                                                <Button variant="contained">View</Button>
+                                                <Link href={`/users/editUser?id=${user.id}`} passHref>
+                                                    <Button variant="contained">View</Button>
+                                                </Link>
                                             </TableCell>
                                         </TableRow>
                                     )) : (

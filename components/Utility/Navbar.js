@@ -20,7 +20,7 @@ import logoW from '../../public/images/logoW.svg'; // assuming the logo is in th
 const pages = [
     { name: 'Home', link: '/dashboard' },
     { name: 'Contacts', link: '/contacts/contactsTable' },
-    { name: 'Company Profile', link: '/companyprofile' },
+    { name: 'Company Profile', link: '/company' },
     { name: 'Users', link: '/users/usersTable' }
 ];
 

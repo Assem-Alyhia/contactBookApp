@@ -1,12 +1,16 @@
 import Navbar from './Navbar';
+import TanstackProvider from '../providers/TanstackProvider';
+
 import {
     Box,
 } from '@mui/material';
 const Layout = ({  pathname , children}) => {
     return ( 
         <Box>
-            {!pathname.startsWith('/auth') ? (<Navbar/>) : (null)}
-            { children }
+            <TanstackProvider>
+                {!pathname.startsWith('/auth') ? (<Navbar/>) : (null)}
+                { children }
+            </TanstackProvider>
         </Box>
     );
 }

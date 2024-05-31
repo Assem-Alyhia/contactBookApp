@@ -1,35 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Avatar, Grid, Switch, FormControlLabel } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import axiosInstance from '../../../pages/api/axiosInstance';
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useContactQuery } from '../../../pages/api/contacts/getContact';
+
 
 export default function EditContact() {
-    const { id } = useParams(); 
-    const [contact, setContact] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
     const [isActive, setIsActive] = useState(false);
 
-    useEffect(() => {
-        const fetchContact = async () => {
-            try {
-                const response = await axiosInstance.get(`/api/Contacts/${id}`); 
-                if (response.data) {
-                    setContact(response.data);
-                    setIsActive(response.data.active);
-                    setIsLoading(false);
-                } else {
-                    console.error('No data found');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchContact();
-    }, [id]);
+
+    const router = useRouter();
+    const { id } = router.query;
+    const { data , isLoading } = useContactQuery(id);
+
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -37,7 +24,7 @@ export default function EditContact() {
         <Box sx={{ marginTop: '1rem' }}>
             <Container maxWidth="lg">
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Home / Contacts / {contact.firstName} {contact.lastName}
+                    Home / Contacts / {data.firstName} {data.lastName}
                 </Typography>
                 <Box borderBottom={2} mb={2} sx={{ opacity: 0.2 }} />
                 <Box sx={{ backgroundColor: '#fff', borderRadius: '5px', boxShadow: '0px 3px 15px #00000012' }}>
@@ -56,10 +43,10 @@ export default function EditContact() {
                         <Grid item xs={12} md={4} display="flex" justifyContent="start" alignItems="center" flexDirection="column" >
                             <Avatar
                                 sx={{ width: 202, height: 202, marginBottom: '1rem' }}
-                                src={contact.avatarUrl || "/broken-image.jpg"}
+                                src={data.avatarUrl || "/broken-image.jpg"}
                             />
                             <Typography variant="body1" display="block" gutterBottom>
-                                {contact.firstName} {contact.lastName}
+                                {data.firstName} {data.lastName}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} md={8}>
@@ -75,7 +62,7 @@ export default function EditContact() {
                                         placeholder="First"
                                         name="firstName"
                                         autoComplete="given-name"
-                                        defaultValue={contact.firstName}
+                                        defaultValue={data.firstName}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -93,7 +80,7 @@ export default function EditContact() {
                                         placeholder="Last"
                                         name="lastName"
                                         autoComplete="family-name"
-                                        defaultValue={contact.lastName}
+                                        defaultValue={data.lastName}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -110,7 +97,7 @@ export default function EditContact() {
                                         placeholder="name@example.com"
                                         name="email"
                                         autoComplete="email"
-                                        defaultValue={contact.email}
+                                        defaultValue={data.email}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -127,7 +114,7 @@ export default function EditContact() {
                                         placeholder="555-123-4567"
                                         name="phone"
                                         autoComplete="tel"
-                                        defaultValue={contact.phone}
+                                        defaultValue={data.phone}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -143,7 +130,7 @@ export default function EditContact() {
                                         placeholder="name@example.com"
                                         name="email2"
                                         autoComplete="email"
-                                        defaultValue={contact.email2}
+                                        defaultValue={data.email2}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -159,7 +146,7 @@ export default function EditContact() {
                                         placeholder="555-123-4567"
                                         name="mobile"
                                         autoComplete="tel"
-                                        defaultValue={contact.mobile}
+                                        defaultValue={data.mobile}
                                         InputLabelProps={{ shrink: false }}
                                         size={'small'}
                                         sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
@@ -175,7 +162,7 @@ export default function EditContact() {
                                         placeholder="Address"
                                         name="address"
                                         autoComplete="street-address"
-                                        defaultValue={contact.address}
+                                        defaultValue={data.address}
                                         InputLabelProps={{ shrink: false }}
                                         InputProps={{
                                             sx: {
@@ -197,7 +184,7 @@ export default function EditContact() {
                                         placeholder="Address 2"
                                         name="address2"
                                         autoComplete="street-address"
-                                        defaultValue={contact.address2}
+                                        defaultValue={data.address2}
                                         InputLabelProps={{ shrink: false }}
                                         InputProps={{
                                             sx: {

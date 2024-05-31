@@ -1,19 +1,32 @@
 import * as React from 'react';
-import {
-    Container,
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Grid,
-    Link,
-} from '@mui/material';
+import { useState } from 'react';
+import { Container, Box, Typography, TextField, Button, Grid } from '@mui/material';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Footer from '@/components/Utility/Footer';
 import Image from 'next/image';
 import logoW from '../../../public/images/logo.svg';
 import img from '../../../public/images/1.jpg';
+import { useSendResetCodeMutation } from '@/pages/api/sendResetCode/sendResetCode';
 
 export default function ChangePassword() {
+    const [email, setEmail] = useState('');
+    const router = useRouter();
+    const { mutate, isLoading, isError } = useSendResetCodeMutation();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        mutate({ email }, {
+            onSuccess: (data) => {
+                const { id, code } = data; // افترض أن البيانات المسترجعة تحتوي على id و code
+                router.push(`/auth/setPassword?id=${id}&code=${code}`);
+            },
+            onError: (error) => {
+                console.error('Error sending reset code: ', error);
+            }
+        });
+    };
+
     return (
         <Box>
             <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
@@ -47,7 +60,7 @@ export default function ChangePassword() {
                         <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: '30px', display: { xs: 'none', md: 'block' } }}>
                             Change Password
                         </Typography>
-                        <Box component="form" noValidate sx={{ mt: 1, width: '100%' }}>
+                        <Box component="form" noValidate sx={{ mt: 1, width: '100%' }} onSubmit={handleSubmit}>
                             <TextField
                                 margin="normal"
                                 fullWidth
@@ -58,18 +71,21 @@ export default function ChangePassword() {
                                 autoFocus
                                 size={'small'}
                                 sx={{ "& input": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                             <Button
                                 type="submit"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                disabled={isLoading}
                             >
-                                Send
+                                {isLoading ? 'Sending...' : 'Send'}
                             </Button>
+                            {isError && <div>Error sending reset code. Please try again.</div>}
                             <Grid container justifyContent="flex-end">
                                 <Grid item sx={{ margin: 'auto' }}>
-                                    <Link href="#" variant="body2">
+                                    <Link href="/auth/login" variant="body2">
                                         {"Back to login"}
                                     </Link>
                                 </Grid>

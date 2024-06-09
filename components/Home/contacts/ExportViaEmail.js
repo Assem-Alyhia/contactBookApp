@@ -15,19 +15,20 @@ import {
     Avatar,
     Checkbox,
     Alert,
+    IconButton,
+    Snackbar
 } from '@mui/material';
-
-
-import Link from 'next/Link';
-import axiosInstance from '../../../pages/api/axiosInstance';
+import Link from 'next/link';
 import CustomPagination from '../../Utility/CustomPagination';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ContentCopyIcon from '@mui/icons-material/FileCopyOutlined';
 import Footer from '@/components/Utility/Footer';
+import { useRouter } from 'next/router';
 
 const columns = [
     { id: 'id', label: 'ID' },
-    { id: 'favorite', label: 'Favorite' },
+    { id: 'favorite', label: 'Favorite' },  
     { id: 'image', label: 'Image' },
     { id: 'firstName', label: 'First Name' },
     { id: 'lastName', label: 'Last Name' },
@@ -38,28 +39,26 @@ const columns = [
 ];
 
 export default function ExportViaEmail() {
-    const [contacts, setContacts] = useState([]);
+    const router = useRouter();
+    const { data } = router.query;
+    const contacts = data ? JSON.parse(data) : [];
     const [search, setSearch] = useState('');
     const [emailSent, setEmailSent] = useState(false);
     const [email, setEmail] = useState('');
     const [page, setPage] = useState(1);
     const [count, setCount] = useState(1);
     const [isClient, setIsClient] = useState(false); 
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     useEffect(() => {
         setIsClient(true); 
     }, []);
 
     useEffect(() => {
-        axiosInstance.get('/api/Users', {
-            params: { page, search }
-        })
-            .then(response => {
-                setContacts(response.data); 
-                setCount(Math.ceil(response.data.length / 5)); 
-            })
-            .catch(error => console.error('Error fetching data: ', error));
-    }, [page, search]);
+        if (contacts) {
+            setCount(Math.ceil(contacts.length / 5));
+        }
+    }, [contacts]);
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
@@ -75,7 +74,16 @@ export default function ExportViaEmail() {
     };
 
     const handlePageChange = (event, value) => {
-        setPage(value);
+        setPage(value); 
+    };
+
+    const handleCopyEmail = (email) => {
+        navigator.clipboard.writeText(email);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     if (!isClient) {
@@ -108,7 +116,7 @@ export default function ExportViaEmail() {
                             size="small"
                             sx={{ mr: 2, minHeight: '35px' }}
                         />
-                        <Button variant="contained" color="primary" onClick={handleSendEmail} sx={{ mr: 1,width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
+                        <Button variant="contained" color="primary" onClick={handleSendEmail} sx={{ mr: 1, width:142, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}>
                             Send
                         </Button>
                     </Box>
@@ -142,11 +150,16 @@ export default function ExportViaEmail() {
                                     </TableCell>
                                     <TableCell>{contact.firstName}</TableCell>
                                     <TableCell>{contact.lastName}</TableCell>
-                                    <TableCell>{contact.email}</TableCell>
+                                    <TableCell>
+                                        {contact.email}
+                                        <IconButton onClick={() => handleCopyEmail(contact.email)} sx={{ padding: '5px', marginLeft: '5px' }}>
+                                            <ContentCopyIcon fontSize="small" />
+                                        </IconButton>
+                                    </TableCell>
                                     <TableCell>{contact.phone}</TableCell>
                                     <TableCell>
                                         <Button
-                                            sx={{ mr: 1,width:93, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                            sx={{ mr: 1, width:93, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
                                             variant="contained"
                                             color={contact.status === 'Active' ? 'success' : 'default'}
                                         >
@@ -165,7 +178,13 @@ export default function ExportViaEmail() {
                 </TableContainer>
                 <CustomPagination count={count} page={page} onChange={handlePageChange} />
             </Container>
-            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
+            <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                message="Email copied to clipboard"
+            />
         </Box>
     );
 }

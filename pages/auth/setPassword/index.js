@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Container, Box, Typography, Button, Grid, OutlinedInput, InputLabel, FormControl, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useRouter } from 'next/router';
@@ -12,17 +12,10 @@ import { useSetPasswordMutation } from '@/pages/api/setPassword/setPassword';
 export default function SetPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [formData, setFormData] = useState({ newPassword: '', confirmPassword: '' });
+    const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
     const router = useRouter();
-    const { id, code } = router.query; // الحصول على id و code من رابط الصفحة
 
     const { mutate, isLoading, isError, isSuccess } = useSetPasswordMutation();
-
-    useEffect(() => {
-        if (!id || !code) {
-            console.error('ID and code are required');
-        }
-    }, [id, code]);
 
     const handleClickShowPassword = () => setShowPassword((prev) => !prev);
     const handleClickShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
@@ -34,13 +27,13 @@ export default function SetPassword() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formData.newPassword !== formData.confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             alert('Passwords do not match');
             return;
         }
-        mutate({ id, code, newPassword: formData.newPassword }, {
+        mutate(formData.password, {
             onSuccess: () => {
-                router.push('/dashboard');
+                router.push('/auth/signIn');
             },
             onError: (error) => {
                 console.error('Error setting new password: ', error);
@@ -87,7 +80,7 @@ export default function SetPassword() {
                                 <OutlinedInput
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    name="newPassword"
+                                    name="password"
                                     autoComplete="current-password"
                                     sx={{ "& .MuiOutlinedInput-root": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
                                     endAdornment={

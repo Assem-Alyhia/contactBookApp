@@ -1,10 +1,11 @@
-// setPassword.js
 import axiosInstance from '../axiosInstance';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 
-const setPassword = async ({ id, code, newPassword }) => {
+const setPassword = async ({ id, code, password }) => {
     try {
-        const response = await axiosInstance.post(`/set-password?id=${id}&code=${code}`, { password: newPassword }, {
+        console.log(id ,code)
+        const response = await axiosInstance.post(`/set-password?id=${id}&code=${code}`, { password }, {
             headers: { 'Content-Type': 'application/json' },
         });
         console.log('Response Data:', response.data);
@@ -25,8 +26,11 @@ const setPassword = async ({ id, code, newPassword }) => {
 };
 
 export const useSetPasswordMutation = () => {
+    const router = useRouter();
+    const { id, code } = router.query;
+
     return useMutation({
-        mutatinFn:setPassword,
+        mutationFn: (password) => setPassword({ id, code, password }),
         onError: (error) => {
             console.error('Error setting new password: ', error);
         },

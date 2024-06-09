@@ -1,5 +1,4 @@
 // pages/auth/register.js
-
 import React, { useState } from 'react';
 import {
     Container,
@@ -31,6 +30,7 @@ export default function Register() {
         firstName: '',
         lastName: '',
         email: '',
+        phoneNumber: '111111111',
         password: '',
         companyName: '',
         vatNumber: '',
@@ -40,7 +40,6 @@ export default function Register() {
         state: '',
         zip: '',
         country: '',
-        phoneNumber: '',
     });
 
     const [formErrors, setFormErrors] = useState({});
@@ -63,6 +62,9 @@ export default function Register() {
                 if (error.errors) {
                     setFormErrors(error.errors);
                 }
+            },
+            onSuccess: () => {
+                router.push('/dashboard'); // الانتقال إلى صفحة الداشبورد بعد التسجيل الناجح
             }
         });
     };
@@ -322,21 +324,6 @@ export default function Register() {
                                         <MenuItem value="TR">Turkey</MenuItem>
                                         <MenuItem value="LE">Lebanon</MenuItem>
                                     </TextField>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="phoneNumber"
-                                        label="Phone Number"
-                                        name="phoneNumber"
-                                        autoComplete="tel"
-                                        size={'small'}
-                                        sx={{ "& input": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
-                                        onChange={handleChange}
-                                        error={!!formErrors.phoneNumber}
-                                        helperText={formErrors.phoneNumber ? formErrors.phoneNumber[0] : ''}
-                                    />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <FormControlLabel

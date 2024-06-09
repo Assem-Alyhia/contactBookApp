@@ -85,7 +85,7 @@ export default function ChangePassword() {
                             {isError && <div>Error sending reset code. Please try again.</div>}
                             <Grid container justifyContent="flex-end">
                                 <Grid item sx={{ margin: 'auto' }}>
-                                    <Link href="/auth/login" variant="body2">
+                                    <Link href="/auth/signIn" variant="body2">
                                         {"Back to login"}
                                     </Link>
                                 </Grid>

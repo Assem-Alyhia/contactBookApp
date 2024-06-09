@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 
 const cookies = new Cookies();
 
-const loginUser = async ({ email, password }) => {
+export const loginUser = async ({ email, password }) => {
     const requestData = { email, password };
     const response = await axiosInstance.post('/login', requestData, {
         headers: { 'Content-Type': 'application/json' },
@@ -14,8 +14,9 @@ const loginUser = async ({ email, password }) => {
 
     if (response.status === 200) {
         const token = response.data.token;
-        cookies.set('authToken', token, { path: '/dashboard' });
-        return token;
+        localStorage.setItem('authToken', token); // حفظ التوكن في localStorage
+        cookies.set('authToken', token, { path: '/' });
+        return { token };
     } else {
         throw new Error('Error in Login...');
     }
@@ -23,8 +24,8 @@ const loginUser = async ({ email, password }) => {
 
 export const useLoginUserMutation = () => {
     const router = useRouter();
-    return useMutation( {
-        mutationFn:loginUser,
+    return useMutation({
+        mutationFn: loginUser,
         onSuccess: () => {
             router.push('/dashboard');
         },

@@ -2,15 +2,15 @@
 import axiosInstance from '../axiosInstance';
 import { useMutation } from '@tanstack/react-query';
 
-const updateUser = async ({ id, firstName, lastName, email, phoneNumber, userType, isActive }) => {
+const updateUser = async ({ id, firstName, lastName, email, phoneNumber, role, status }) => {
     try {
-        const response = await axiosInstance.put(`/users/${id}`, {
+        const response = await axiosInstance.put(`/Users/${id}`, {
             firstName,
             lastName,
             email,
             phoneNumber,
-            userType,
-            isActive
+            role,
+            status
         }, {
             headers: { 'Content-Type': 'application/json' },
         });

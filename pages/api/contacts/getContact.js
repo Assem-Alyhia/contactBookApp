@@ -1,17 +1,15 @@
-import axiosInstance from "../axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+import axiosInstance from '../axiosInstance';
+import { useQuery } from '@tanstack/react-query';
+
+const getContact = async (id) => {
+    const { data } = await axiosInstance.get(`/Contacts/${id}`);
+    return data;
+};
 
 const useContactQuery = (id) => {
     return useQuery({
-        queryKey: ["contact", id],
-        queryFn: async () => {
-            if (!id) {
-                return null;
-            }
-            const response = await axiosInstance.get(`/contacts/${id}`);
-            return response.data;
-        },
-        enabled: !!id, 
+        queryKey: ['contact', id],
+        queryFn: () => getContact(id),
     });
 };
 

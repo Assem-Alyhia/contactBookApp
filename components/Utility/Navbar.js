@@ -11,11 +11,13 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import Link from 'next/link';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
-import logoW from '../../public/images/logoW.svg'; // assuming the logo is in this path
+import { useRouter } from 'next/router';
+import { useProfileQuery } from '@/pages/api/users/getProfile';
+import { logoutUser } from '@/pages/api/users/logout'; 
+import logoW from '../../public/images/logoW.svg'; 
 
 const pages = [
     { name: 'Home', link: '/dashboard' },
@@ -26,12 +28,14 @@ const pages = [
 
 const settings = [
     { name: 'My Profile', link: '/users/editUser' },
-    { name: 'Log Out', link: '/auth/signIn' }
+    { name: 'Log Out', action: logoutUser }
 ];
 
 function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const router = useRouter();
+    const { data: userProfile, isLoading } = useProfileQuery(); // جلب بيانات المستخدم
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -46,6 +50,20 @@ function Navbar() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleMyProfileClick = () => {
+        if (userProfile) {
+            router.push({
+                pathname: '/users/editUser',
+                query: { ...userProfile } // تمرير بيانات المستخدم كـ query parameters
+            });
+        }
+    };
+
+    const handleLogout = () => {
+        logoutUser();
+        handleCloseUserMenu();
     };
 
     return (
@@ -112,13 +130,19 @@ function Navbar() {
                                 Username
                             </MenuItem>
                             {settings.map((setting) => (
-                                <Link href={setting.link} passHref legacyBehavior key={setting.name}>
-                                    <MenuItem onClick={handleCloseUserMenu} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
+                                setting.name === 'My Profile' ? (
+                                    <MenuItem key={setting.name} onClick={handleMyProfileClick} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
                                         <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' }}>
                                             {setting.name}
                                         </Typography>
                                     </MenuItem>
-                                </Link>
+                                ) : (
+                                    <MenuItem key={setting.name} onClick={setting.action ? handleLogout : handleCloseUserMenu} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
+                                        <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' }}>
+                                            {setting.name}
+                                        </Typography>
+                                    </MenuItem>
+                                )
                             ))}
                         </Menu>
                     </Box>
@@ -191,13 +215,19 @@ function Navbar() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <Link href={setting.link} passHref legacyBehavior key={setting.name}>
-                                    <MenuItem onClick={handleCloseUserMenu}>
+                                setting.name === 'My Profile' ? (
+                                    <MenuItem key={setting.name} onClick={handleMyProfileClick}>
                                         <Typography textAlign="center" sx={{ textDecoration: 'none' }}>
                                             {setting.name}
                                         </Typography>
                                     </MenuItem>
-                                </Link>
+                                ) : (
+                                    <MenuItem key={setting.name} onClick={setting.action ? handleLogout : handleCloseUserMenu}>
+                                        <Typography textAlign="center" sx={{ textDecoration: 'none' }}>
+                                            {setting.name}
+                                        </Typography>
+                                    </MenuItem>
+                                )
                             ))}
                         </Menu>
                     </Box>

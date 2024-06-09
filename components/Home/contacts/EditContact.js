@@ -1,219 +1,236 @@
-import React, { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Avatar, Grid, Switch, FormControlLabel } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Box, Typography, TextField, Button, Avatar, Grid, Switch, FormControlLabel, useMediaQuery } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContactQuery } from '../../../pages/api/contacts/getContact';
-
+import { useContactQuery } from '@/pages/api/contacts/getContact';
+import { useUpdateContactMutation } from '@/pages/api/contacts/setUpdateContact';
 
 export default function EditContact() {
+    const [isEditing, setIsEditing] = useState(false);
     const [isActive, setIsActive] = useState(false);
-
-
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        emailTwo: '',
+        phoneNumber: '',
+        mobileNumber: '',
+        address: '',
+        addressTwo: '',
+    });
+    const [errors, setErrors] = useState({});
     const router = useRouter();
     const { id } = router.query;
-    const { data , isLoading } = useContactQuery(id);
+    const { data, isLoading } = useContactQuery(id);
+    const { mutate: updateContact, isLoading: isUpdating } = useUpdateContactMutation();
 
+    useEffect(() => {
+        if (data) {
+            setFormData({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phoneNumber: data.phoneNumber,
+                emailTwo: data.emailTwo,
+                mobileNumber: data.mobileNumber,
+                address: data.address,
+                addressTwo: data.addressTwo,
+            });
+            setIsActive(data.status === 'Active');
+        }
+    }, [data]);
+
+    const handleChange = (e) => {
+        const { name, value, checked, type } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.firstName) newErrors.firstName = 'First name is required.';
+        if (!formData.lastName) newErrors.lastName = 'Last name is required.';
+        if (!formData.email) newErrors.email = 'Email is required.';
+        if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required.';
+        if (!formData.address) newErrors.address = 'Address is required.';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleEditClick = (e) => {
+        e.preventDefault();
+        setIsEditing(true);
+    };
+
+    const handleSaveClick = (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+        updateContact({ id, ...formData, status: isActive ? 'Active' : 'Inactive' }, {
+            onSuccess: () => {
+                setIsEditing(false);
+            },
+            onError: (error) => {
+                console.error('Error updating contact: ', error);
+                if (error.response && error.response.data && error.response.data.errors) {
+                    setErrors(error.response.data.errors);
+                }
+            }
+        });
+    };
+
+    const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
+
     return (
         <Box sx={{ marginTop: '1rem' }}>
             <Container maxWidth="lg">
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Home / Contacts / {data.firstName} {data.lastName}
+                    Home / Contacts / {formData.firstName} {formData.lastName}
                 </Typography>
                 <Box borderBottom={2} mb={2} sx={{ opacity: 0.2 }} />
                 <Box sx={{ backgroundColor: '#fff', borderRadius: '5px', boxShadow: '0px 3px 15px #00000012' }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ border: '1px solid #E0E0E0', fontSize: '20px', fontWeight: '600', background: '#F7F7F7 0% 0% no-repeat padding-box', padding: '.7rem', borderRadius: '5px' }}>
-                        <Typography variant="h6" sx={{fontSize:'20px' ,  fontWeight: '600'}}> 
+                        <Typography variant="h6" sx={{ fontSize: '20px', fontWeight: '600' }}>
                             Contact details
-                        </Typography>   
+                        </Typography>
                         <FormControlLabel
-                            control={<Switch checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />}
+                            control={<Switch checked={isActive} onChange={(e) => setIsActive(e.target.checked)} disabled={!isEditing} />}
                             label="Active"
                             labelPlacement="start"
                             sx={{ marginLeft: 'auto' }}
                         />
                     </Box>
-                    <Grid container spacing={3} sx={{ padding: '2rem 2rem 2rem 2rem' }}>
-                        <Grid item xs={12} md={4} display="flex" justifyContent="start" alignItems="center" flexDirection="column" >
-                            <Avatar
-                                sx={{ width: 202, height: 202, marginBottom: '1rem' }}
-                                src={data.avatarUrl || "/broken-image.jpg"}
-                            />
-                            <Typography variant="body1" display="block" gutterBottom>
-                                {data.firstName} {data.lastName}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        First name *
-                                    </Typography>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="firstName"
-                                        placeholder="First"
-                                        name="firstName"
-                                        autoComplete="given-name"
-                                        defaultValue={data.firstName}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                        
-                                    />
+                    <Box component="form" onSubmit={handleSaveClick}>
+                        <Grid container spacing={3} sx={{ padding: '2rem' }}>
+                            <Grid item xs={12} md={4} display="flex" justifyContent="start" alignItems="center" flexDirection="column">
+                                <Avatar
+                                    sx={{ width: 202, height: 202, marginBottom: '1rem' }}
+                                    src={formData.imageUrl || "/broken-image.jpg"}
+                                />
+                                <Typography variant="body1" display="block" gutterBottom>
+                                    {formData.firstName} {formData.lastName}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={8}>
+                                <Grid container spacing={2}>
+                                    {[
+                                        { label: 'First name *', name: 'firstName', placeholder: 'First', autoComplete: 'given-name', value: formData.firstName, required: true },
+                                        { label: 'Last name *', name: 'lastName', placeholder: 'Last', autoComplete: 'family-name', value: formData.lastName, required: true },
+                                        { label: 'Email *', name: 'email', placeholder: 'name@example.com', autoComplete: 'email', value: formData.email , required: true },
+                                        { label: 'Phone *', name: 'phoneNumber', placeholder: '555-123-4567', autoComplete: 'tel', value: formData.phoneNumber, required: true },
+                                        { label: 'Email 2', name: 'emailTwo', placeholder: 'name@example.com', autoComplete: 'email', value: formData.emailTwo , required: true},
+                                        { label: 'Mobile', name: 'mobileNumber', placeholder: '555-123-4567', autoComplete: 'tel', value: formData.mobileNumber , required: true},
+                                    ].map((field, index) => (
+                                        <Grid key={index} item xs={12} md={6}>
+                                            <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
+                                                {field.label}
+                                            </Typography>
+                                            <TextField
+                                                fullWidth
+                                                id={field.name}
+                                                name={field.name}
+                                                placeholder={field.placeholder}
+                                                autoComplete={field.autoComplete}
+                                                value={field.value}
+                                                onChange={handleChange}
+                                                InputLabelProps={{ shrink: false }}
+                                                size="small"
+                                                required={field.required}
+                                                inputProps={field.inputProps}
+                                                sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
+                                                disabled={!isEditing}
+                                                error={!!errors[field.name]}
+                                                helperText={errors[field.name]}
+                                            />
+                                        </Grid>
+                                    ))}
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
+                                            Address *
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            id="address"
+                                            name="address"
+                                            placeholder="Address"
+                                            autoComplete="street-address"
+                                            value={formData.address}
+                                            onChange={handleChange}
+                                            InputLabelProps={{ shrink: false }}
+                                            inputProps={{ multiline: true, rows: isMobile ? 4 : 2 }}
+                                            sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
+                                            disabled={!isEditing}
+                                            error={!!errors.address}
+                                            helperText={errors.address}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
+                                            Address 2
+                                        </Typography>
+                                        <TextField
+                                            fullWidth
+                                            id="addressTwo"
+                                            name="addressTwo"
+                                            placeholder="Address 2"
+                                            autoComplete="street-address"
+                                            value={formData.addressTwo}
+                                            onChange={handleChange}
+                                            InputLabelProps={{ shrink: false }}
+                                            inputProps={{ multiline: true, rows: isMobile ? 4 : 2 }}
+                                            sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
+                                            disabled={!isEditing}
+                                            error={!!errors.addressTwo}
+                                            helperText={errors.addressTwo}
+                                        />
+                                    </Grid>
+                                    <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} justifyContent="flex-start" mt={3} sx={{ width: '100%', paddingLeft: '16px' }}>
+                                        {isEditing ? (
+                                            <Button
+                                                type="submit"
+                                                variant="outlined"
+                                                color="primary"
+                                                startIcon={<SaveIcon />}
+                                                sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                                disabled={isUpdating}
+                                            >
+                                                {isUpdating ? 'Updating...' : 'Save'}
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                variant="outlined"
+                                                color="primary"
+                                                startIcon={<EditIcon />}
+                                                sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                                onClick={handleEditClick}
+                                            >
+                                                Edit
+                                            </Button>
+                                        )}
+                                        <Link href='/contacts/contactsTable' passHref>
+                                            <Button variant="outlined"
+                                                sx={{ width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                            >
+                                                Back
+                                            </Button>
+                                        </Link>
+                                    </Box>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Last name *
-                                    </Typography>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="lastName"
-                                        placeholder="Last"
-                                        name="lastName"
-                                        autoComplete="family-name"
-                                        defaultValue={data.lastName}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Email
-                                    </Typography>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        placeholder="name@example.com"
-                                        name="email"
-                                        autoComplete="email"
-                                        defaultValue={data.email}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Phone *
-                                    </Typography>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="phone"
-                                        placeholder="555-123-4567"
-                                        name="phone"
-                                        autoComplete="tel"
-                                        defaultValue={data.phone}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Email 2
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        id="email2"
-                                        placeholder="name@example.com"
-                                        name="email2"
-                                        autoComplete="email"
-                                        defaultValue={data.email2}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Mobile
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        id="mobile"
-                                        placeholder="555-123-4567"
-                                        name="mobile"
-                                        autoComplete="tel"
-                                        defaultValue={data.mobile}
-                                        InputLabelProps={{ shrink: false }}
-                                        size={'small'}
-                                        sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Address
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        id="address"
-                                        placeholder="Address"
-                                        name="address"
-                                        autoComplete="street-address"
-                                        defaultValue={data.address}
-                                        InputLabelProps={{ shrink: false }}
-                                        InputProps={{
-                                            sx: {
-                                                textAlign: 'left',
-                                                alignItems: 'flex-start',
-                                                paddingTop: '0px' // Adjust the padding as needed
-                                            }
-                                        }}
-                                        sx={{ "& .MuiInputBase-root": { height: '60px', display: 'flex', alignItems: 'flex-start' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '500' }}>
-                                        Address 2
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        id="address2"
-                                        placeholder="Address 2"
-                                        name="address2"
-                                        autoComplete="street-address"
-                                        defaultValue={data.address2}
-                                        InputLabelProps={{ shrink: false }}
-                                        InputProps={{
-                                            sx: {
-                                                textAlign: 'left',
-                                                alignItems: 'flex-start',   
-                                                paddingTop: '0px' // Adjust the padding as needed
-                                            }
-                                        }}
-                                        sx={{ "& .MuiInputBase-root": { height: '60px', display: 'flex', alignItems: 'flex-start' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    />
-                                </Grid>
-                                <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '16px' }}>
-                                    <Button variant="outlined" color="primary" startIcon={<EditIcon />} 
-                                    sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                                        Edit
-                                    </Button>
-                                    <Link href='/contacts/contactsTable'>
-                                        <Button variant="outlined" startIcon={<ArrowBackIcon />} 
-                                        sx={{ mr: 2,width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}>
-                                            Back
-                                        </Button>
-                                    </Link>
-                                </Box>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Box>
                 </Box>
             </Container>
-            <Footer  color = '#000' gap = '0 50% 0 10%' opacity='0.3' />
+            <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
         </Box>
     );
 }

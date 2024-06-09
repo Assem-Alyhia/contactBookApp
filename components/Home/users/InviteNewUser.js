@@ -11,7 +11,7 @@ export default function InviteNewUser() {
         lastName: '',
         email: '',
         phoneNumber: '',
-        userType: '',
+        role: '',
     });
 
     const mutation = useAddUserMutation();
@@ -129,11 +129,11 @@ export default function InviteNewUser() {
                                 <TextField
                                     required
                                     fullWidth
-                                    id="userType"
+                                    id="role"
                                     select
                                     placeholder="Select user type"
-                                    name="userType"
-                                    value={newUser.userType}
+                                    name="role"
+                                    value={newUser.role}
                                     onChange={handleChange}
                                     autoComplete="user-type"
                                     InputLabelProps={{ shrink: false }}

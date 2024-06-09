@@ -10,32 +10,24 @@ import {
     TableHead,
     TableRow,
     Paper,
-    Avatar
+    Avatar,
 } from '@mui/material';
 import Image from 'next/image';
-import logoW from '../../../public/images/logo.svg'
-import Imeges from '../../../public/images/1.jpg'
+import logoWB from '../../../public/images/logoWB.svg';
 import Footer from '@/components/Utility/Footer';
-
-function createData(id, image, firstName, lastName, email, phone) {
-    return { id, image, firstName, lastName, email, phone };
-}
-
-const rows = [
-    createData('001', Imeges , 'Adam', 'Smith', 'Email@email.com', '+94 456 687 455'),
-    createData('002', '/images/avatar.png', 'Adam', 'Smith', 'Email@email.com', '+94 456 687 455'),
-    createData('003', '/images/avatar.png', 'Adam', 'Smith', 'Email@email.com', '+94 456 687 455'),
-    createData('004', '/images/avatar.png', 'Adam', 'Smith', 'Email@email.com', '+94 456 687 455'),
-    createData('005', '/images/avatar.png', 'Adam', 'Smith', 'Email@email.com', '+94 456 687 455'),
-];
+import { useRouter } from 'next/router';
 
 export default function ContactBook() {
+    const router = useRouter();
+    const { data } = router.query;
+    const contacts = data ? JSON.parse(data) : [];
+
     return (
         <Box >
         <Container component="main" maxWidth="md"  sx={{ display: 'flex', flexDirection: 'column', padding: '0 !important' ,width : '583px' , margin:'auto'}}>
             <TableContainer component={Paper}  sx={{ boxShadow: '0px 3px 15px rgba(0,0,0,0.2)' , padding : '0 1rem' ,margin:'3rem 0 0 0'}}>
-                <Box sx={{ margin: '2rem auto', textAlign: 'center' }}>
-                    <Image src={logoW} alt="Contact Book Logo" width={100} height={100} style={{color:'#4E73DF'}}/>
+                <Box sx={{ margin: '0 auto', textAlign: 'center' }}>
+                    <Image src={logoWB} alt="Contact Book Logo" width={200} height={130}/>
                 </Box>
                 <Table aria-label="contact book table" sx={{marginBottom :'5rem'}} >
                     <TableHead sx={{ backgroundColor: '#000' }}>
@@ -49,7 +41,7 @@ export default function ContactBook() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {contacts.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell sx={{ borderBottom: 'none', fontSize: '12px', padding: '4px 8px' }}>{row.id}</TableCell>
                                 <TableCell sx={{ borderBottom: 'none', padding: '4px 8px' }}>
@@ -68,7 +60,7 @@ export default function ContactBook() {
                 </Typography>
             </TableContainer>
         </Container>
-        <Footer  color = '#000' gap = '0 40% 0 10%' opacity='0.3' mdPosition='auto'/>
+        <Footer  color = '#000' gap = '0 40% 0 10%' opacity='0.3' mdPosition='fixed'/>
         </Box>
     );
 }

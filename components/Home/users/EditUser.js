@@ -3,39 +3,49 @@ import { Container, Box, Typography, TextField, Button, Grid, MenuItem, Switch, 
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import { useRouter } from 'next/router';
 import { useUserQuery } from '@/pages/api/users/getUser';
+import { useProfileQuery } from '@/pages/api/users/getProfile';
 import { useUpdateUserMutation } from '@/pages/api/users/setUpdateUser';
 
 export default function EditUser() {
-    const [isActive, setIsActive] = useState(false);
+    const [isEditing, setIsEditing] = useState(false); // حالة التعديل
+    const [status, setStatus] = useState("Locked");  // القيمة الافتراضية يمكن أن تكون "Locked" أو "Active" بناءً على حالتك
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
-        userType: '',
-        isActive: false,
+        role: '',
+        status: "Locked", // يمكن أن تكون القيمة الافتراضية "Active" أو "Locked"
     });
 
     const router = useRouter();
     const { id } = router.query;
-    const { isLoading, data } = useUserQuery(id);
+    const { isLoading: isUserLoading, data: userData } = useUserQuery(id);
+    const { isLoading: isProfileLoading, data: profileData } = useProfileQuery();
     const { mutate: updateUser, isLoading: isUpdating } = useUpdateUserMutation();
 
     useEffect(() => {
-        if (data) {
+        if (userData) {
             setFormData({
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                phoneNumber: data.phoneNumber,
-                userType: data.userType,
-                isActive: data.isActive,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                phoneNumber: userData.phoneNumber,
+                role: userData.role,
+                status: userData.status,
             });
-            setIsActive(data.isActive);
+            setStatus(userData.status);
         }
-    }, [data]);
+    }, [userData]);
+
+    useEffect(() => {
+        if (profileData) {
+            // يمكن إضافة البيانات الشخصية إلى formData إذا لزم الأمر
+        }
+    }, [profileData]);
 
     const handleChange = (e) => {
         const { name, value, checked, type } = e.target;
@@ -43,16 +53,21 @@ export default function EditUser() {
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
-        if (name === 'isActive') {
-            setIsActive(checked);
+        if (name === 'status') {
+            setStatus(value);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleEditClick = (e) => {
+        e.preventDefault();
+        setIsEditing(true);
+    };
+
+    const handleSaveClick = (e) => {
         e.preventDefault();
         updateUser({ id, ...formData }, {
             onSuccess: () => {
-                router.push('/users/usersTable');
+                setIsEditing(false);
             },
             onError: (error) => {
                 console.error('Error updating user: ', error);
@@ -60,7 +75,7 @@ export default function EditUser() {
         });
     };
 
-    if (isLoading) {
+    if (isUserLoading || isProfileLoading) {
         return <div>Loading...</div>;
     }
 
@@ -77,13 +92,13 @@ export default function EditUser() {
                             User details
                         </Typography>
                         <FormControlLabel
-                            control={<Switch checked={isActive} onChange={handleChange} name="isActive" />}
-                            label="Unlocked"
+                            control={<Switch checked={status === "Active"} onChange={(e) => handleChange({ target: { name: 'status', value: e.target.checked ? "Active" : "Locked" } })} name="status" disabled={!isEditing} />}
+                            label="Active"
                             labelPlacement="start"
                             sx={{ marginLeft: 'auto' }}
                         />
                     </Box>
-                    <Box component="form" onSubmit={handleSubmit}>
+                    <Box component="form" onSubmit={handleSaveClick}>
                         <Grid container spacing={3} sx={{ padding: '2rem' }}>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="caption" display="block" gutterBottom sx={{ fontSize: '16px', fontWeight: '600' }}>
@@ -101,6 +116,7 @@ export default function EditUser() {
                                     value={formData.firstName}
                                     onChange={handleChange}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                    disabled={!isEditing}
                                 />
                             </Grid>
                             <Grid item xs={12} md={6}>
@@ -119,6 +135,7 @@ export default function EditUser() {
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                    disabled={!isEditing}
                                 />
                             </Grid>
                             <Grid item xs={12} md={4}>
@@ -137,6 +154,7 @@ export default function EditUser() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                    disabled={!isEditing}
                                 />
                             </Grid>
                             <Grid item xs={12} md={4}>
@@ -155,6 +173,7 @@ export default function EditUser() {
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                    disabled={!isEditing}
                                 />
                             </Grid>
                             <Grid item xs={12} md={4}>
@@ -164,32 +183,45 @@ export default function EditUser() {
                                 <TextField
                                     required
                                     fullWidth
-                                    id="userType"
+                                    id="role"
                                     select
                                     placeholder="Select user type"
-                                    name="userType"
+                                    name="role"
                                     autoComplete="user-type"
                                     InputLabelProps={{ shrink: false }}
-                                    value={formData.userType}
+                                    value={formData.role}
                                     onChange={handleChange}
                                     size={'small'}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
+                                    disabled={!isEditing}
                                 >
                                     <MenuItem value="admin">Administrator</MenuItem>
                                     <MenuItem value="user">Regular User</MenuItem>
                                 </TextField>
                             </Grid>
                             <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' }}>
-                                <Button
-                                    type="submit"
-                                    variant="outlined"
-                                    color="primary"
-                                    startIcon={<EditIcon />}
-                                    sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                                    disabled={isUpdating}
-                                >
-                                    {isUpdating ? 'Updating...' : 'Edit'}
-                                </Button>
+                                {isEditing ? (
+                                    <Button
+                                        type="submit"
+                                        variant="outlined"
+                                        color="primary"
+                                        startIcon={<SaveIcon />}
+                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                        disabled={isUpdating}
+                                    >
+                                        {isUpdating ? 'Updating...' : 'Save'}
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        startIcon={<EditIcon />}
+                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                        onClick={handleEditClick}
+                                    >
+                                        Edit
+                                    </Button>
+                                )}
                                 <Link href='/users/usersTable' passHref>
                                     <Button variant="outlined"
                                         sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px' }}

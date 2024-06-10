@@ -19,7 +19,7 @@ export default function ChangePassword() {
         mutate({ email }, {
             onSuccess: (data) => {
                 const { id, code } = data; // افترض أن البيانات المسترجعة تحتوي على id و code
-                router.push(`/auth/setPassword?id=${id}&code=${code}`);
+                router.push(`/auth/resetPassword?id=${id}&code=${code}`);
             },
             onError: (error) => {
                 console.error('Error sending reset code: ', error);

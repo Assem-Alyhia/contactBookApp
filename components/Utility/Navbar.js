@@ -71,7 +71,7 @@ function Navbar() {
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', mr: 7 }}>
-                        <Link href='/'>
+                        <Link href='/dashboard'>
                             <Image src={logoW} alt="Contact Book Logo" width={160} height={34} />
                         </Link>
                     </Box>

@@ -140,7 +140,7 @@ export default function InviteNewUser() {
                                     size="small"
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
                                 >
-                                    <MenuItem value="admin">Administrator</MenuItem>
+                                    <MenuItem value="admin">Admini Strator</MenuItem>
                                     <MenuItem value="user">Regular User</MenuItem>
                                 </TextField>
                             </Grid>

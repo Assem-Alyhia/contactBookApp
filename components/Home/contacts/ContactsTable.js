@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, TextField, 
-    Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-    Paper, Avatar, Checkbox, Card, CardContent, Grid, IconButton, useMediaQuery, Menu, MenuItem, Snackbar } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, Checkbox, Card, CardContent, Grid, IconButton, useMediaQuery, Menu, MenuItem, Snackbar } from '@mui/material';
 import Link from 'next/link';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -21,7 +19,7 @@ const columns = [
     { id: 'firstName', label: 'First Name' },
     { id: 'lastName', label: 'Last Name' },
     { id: 'email', label: 'Email' },
-    { id: 'phone', label: 'Phone' },
+    { id: 'phoneNumber', label: 'Phone Number' },
     { id: 'status', label: 'Status' },
     { id: 'action', label: 'Action' },
 ];
@@ -227,6 +225,21 @@ export default function ContactsTable() {
                                                         {favorites[contact.id] ? <StarIcon color="primary" /> : <StarBorderIcon />}
                                                     </IconButton>
                                                 </Box>
+                                                <Box borderBottom={1} mb={2} sx={{ opacity: 0.2 }} />
+                                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                                                    <Typography variant="caption" color="textSecondary">#{contact.id}</Typography>
+                                                    <Button
+                                                        variant="outlined"
+                                                        sx={{
+                                                            backgroundColor: contact.status === 'Active' ? '#D4EDDA' : contact.status === 'Pending' ? '#FFF3CD' : contact.status === 'Locked' ? '#F8D7DA' : 'default',
+                                                            height: '20px',
+                                                            fontSize: '10px'
+                                                        }}
+                                                        color={contact.status === 'Active' ? 'success' : contact.status === 'Pending' ? 'warning' : 'error'}
+                                                    >
+                                                        {contact.status}
+                                                    </Button>
+                                                </Box>
                                                 <Grid container spacing={2} alignItems="center">
                                                     <Grid item xs={12} display="flex" justifyContent="center">
                                                         <Avatar src={contact.image} alt={contact.firstName} sx={{ width: 56, height: 56 }} />
@@ -236,6 +249,7 @@ export default function ContactsTable() {
                                                             {contact.firstName} {contact.lastName}
                                                         </Typography>
                                                     </Grid>
+                                                    <Box borderBottom={1} mb={2} sx={{ opacity: 0.2, width: '100%' }} />
                                                     <Grid item xs={12} display="flex" justifyContent="center">
                                                         <Typography variant="body2" color="textSecondary">
                                                             {contact.email}
@@ -246,21 +260,8 @@ export default function ContactsTable() {
                                                     </Grid>
                                                     <Grid item xs={12} display="flex" justifyContent="center">
                                                         <Typography variant="body2" color="textSecondary">
-                                                            {contact.phone}
+                                                            {contact.phoneNumber}
                                                         </Typography>
-                                                    </Grid>
-                                                    <Grid item xs={12} display="flex" justifyContent="center">
-                                                        <Button
-                                                            variant="outlined"
-                                                            color={contact.status === 'Active' ? 'success' : contact.status === 'Pending' ? 'warning' : 'error'}
-                                                        >
-                                                            {contact.status}
-                                                        </Button>
-                                                    </Grid>
-                                                    <Grid item xs={12} display="flex" justifyContent="center">
-                                                        <Link href={`/contacts/editContact?id=${contact.id}`} passHref>
-                                                            <Button variant="contained">View</Button>
-                                                        </Link>
                                                     </Grid>
                                                 </Grid>
                                             </CardContent>
@@ -320,9 +321,8 @@ export default function ContactsTable() {
                                                             <ContentCopyIcon fontSize="small" />
                                                         </IconButton>
                                                     </TableCell>
-                                                    <TableCell>{contact.phone}</TableCell>
+                                                    <TableCell>{contact.phoneNumber}</TableCell>
                                                     <TableCell>
-                
                                                         <Button
                                                             variant="outlined"
                                                             sx={{

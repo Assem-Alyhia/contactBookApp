@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Grid, MenuItem, Switch, FormControlLabel } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Grid, MenuItem, Switch, FormControlLabel, Snackbar, Alert } from '@mui/material';
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,16 +10,19 @@ import { useProfileQuery } from '@/pages/api/users/getProfile';
 import { useUpdateUserMutation } from '@/pages/api/users/setUpdateUser';
 
 export default function EditUser() {
-    const [isEditing, setIsEditing] = useState(false); // حالة التعديل
-    const [status, setStatus] = useState("Locked");  // القيمة الافتراضية يمكن أن تكون "Locked" أو "Active" بناءً على حالتك
+    const [isEditing, setIsEditing] = useState(false); 
+    const [isActive, setIsActive] = useState(true); 
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
         role: '',
-        status: "Locked", // يمكن أن تكون القيمة الافتراضية "Active" أو "Locked"
+        status: "Active", 
     });
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const router = useRouter();
     const { id } = router.query;
@@ -37,24 +40,18 @@ export default function EditUser() {
                 role: userData.role,
                 status: userData.status,
             });
-            setStatus(userData.status);
+            setIsActive(userData.status === "Active");
         }
     }, [userData]);
-
-    useEffect(() => {
-        if (profileData) {
-            // يمكن إضافة البيانات الشخصية إلى formData إذا لزم الأمر
-        }
-    }, [profileData]);
 
     const handleChange = (e) => {
         const { name, value, checked, type } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value,
+            [name]: type === 'checkbox' ? (checked ? "Active" : "Locked") : value,
         }));
         if (name === 'status') {
-            setStatus(value);
+            setIsActive(value === "Active");
         }
     };
 
@@ -65,19 +62,40 @@ export default function EditUser() {
 
     const handleSaveClick = (e) => {
         e.preventDefault();
-        updateUser({ id, ...formData }, {
+        updateUser({ id, ...formData, status: isActive ? "Active" : "Locked" }, {
             onSuccess: () => {
                 setIsEditing(false);
+                setSnackbarMessage('User updated successfully!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
             },
             onError: (error) => {
                 console.error('Error updating user: ', error);
+                setSnackbarMessage('Error updating user. Please try again.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         });
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     if (isUserLoading || isProfileLoading) {
         return <div>Loading...</div>;
     }
+
+    const canEditUser = () => {
+        if (profileData.role === 'Owner') {
+            return true;
+        } else if (profileData.role === 'Admin' && formData.role === 'User') {
+            return true;
+        } else if (profileData.id === userData.id) {
+            return true;
+        }
+        return false;
+    };
 
     return (
         <Box sx={{ marginTop: '1rem' }}>
@@ -92,8 +110,8 @@ export default function EditUser() {
                             User details
                         </Typography>
                         <FormControlLabel
-                            control={<Switch checked={status === "Active"} onChange={(e) => handleChange({ target: { name: 'status', value: e.target.checked ? "Active" : "Locked" } })} name="status" disabled={!isEditing} />}
-                            label="Active"
+                            control={<Switch checked={isActive} onChange={(e) => setIsActive(e.target.checked)} name="status" disabled={!isEditing} />}
+                            label={isActive ? "Unlocked" : "Locked"}
                             labelPlacement="start"
                             sx={{ marginLeft: 'auto' }}
                         />
@@ -195,8 +213,8 @@ export default function EditUser() {
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
                                     disabled={!isEditing}
                                 >
-                                    <MenuItem value="admin">Administrator</MenuItem>
-                                    <MenuItem value="user">Regular User</MenuItem>
+                                    <MenuItem value="Admin">Admin</MenuItem>
+                                    <MenuItem value="User">Regular User</MenuItem>
                                 </TextField>
                             </Grid>
                             <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' }}>
@@ -212,15 +230,17 @@ export default function EditUser() {
                                         {isUpdating ? 'Updating...' : 'Save'}
                                     </Button>
                                 ) : (
-                                    <Button
-                                        variant="outlined"
-                                        color="primary"
-                                        startIcon={<EditIcon />}
-                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
-                                        onClick={handleEditClick}
-                                    >
-                                        Edit
-                                    </Button>
+                                    canEditUser() && (
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            startIcon={<EditIcon />}
+                                            sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                            onClick={handleEditClick}
+                                        >
+                                            Edit
+                                        </Button>
+                                    )
                                 )}
                                 <Link href='/users/usersTable' passHref>
                                     <Button variant="outlined"
@@ -235,6 +255,11 @@ export default function EditUser() {
                 </Box>
             </Container>
             <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

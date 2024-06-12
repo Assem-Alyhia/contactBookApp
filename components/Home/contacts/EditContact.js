@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Avatar, Grid, Switch, FormControlLabel, useMediaQuery } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Avatar, Grid, Switch, FormControlLabel, useMediaQuery, Snackbar, Alert } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContactQuery } from '@/pages/api/contacts/getContact';
 import { useUpdateContactMutation } from '@/pages/api/contacts/setUpdateContact';
+import { useProfileQuery } from '@/pages/api/users/getProfile';
+import getPermissions from '@/components/Utility/rolesPermissions';
+import Footer from '@/components/Utility/Footer';
 
 export default function EditContact() {
     const [isEditing, setIsEditing] = useState(false);
@@ -23,26 +24,33 @@ export default function EditContact() {
         addressTwo: '',
     });
     const [errors, setErrors] = useState({});
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const router = useRouter();
     const { id } = router.query;
-    const { data, isLoading } = useContactQuery(id);
+    const { data: contactData, isLoading } = useContactQuery(id);
+    const { data: userProfile, isLoading: isProfileLoading } = useProfileQuery();
     const { mutate: updateContact, isLoading: isUpdating } = useUpdateContactMutation();
 
+    const role = userProfile?.role || 'User';
+    const permissions = getPermissions(role);
+
     useEffect(() => {
-        if (data) {
+        if (contactData) {
             setFormData({
-                firstName: data.firstName,
-                lastName: data.lastName,
-                email: data.email,
-                phoneNumber: data.phoneNumber,
-                emailTwo: data.emailTwo,
-                mobileNumber: data.mobileNumber,
-                address: data.address,
-                addressTwo: data.addressTwo,
+                firstName: contactData.firstName,
+                lastName: contactData.lastName,
+                email: contactData.email,
+                phoneNumber: contactData.phoneNumber,
+                emailTwo: contactData.emailTwo,
+                mobileNumber: contactData.mobileNumber,
+                address: contactData.address,
+                addressTwo: contactData.addressTwo,
             });
-            setIsActive(data.status === 'Active');
+            setIsActive(contactData.status === 'Active');
         }
-    }, [data]);
+    }, [contactData]);
 
     const handleChange = (e) => {
         const { name, value, checked, type } = e.target;
@@ -74,9 +82,15 @@ export default function EditContact() {
         updateContact({ id, ...formData, status: isActive ? 'Active' : 'Inactive' }, {
             onSuccess: () => {
                 setIsEditing(false);
+                setSnackbarMessage('Contact updated successfully!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
             },
             onError: (error) => {
                 console.error('Error updating contact: ', error);
+                setSnackbarMessage('Error updating contact. Please try again.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
                 if (error.response && error.response.data && error.response.data.errors) {
                     setErrors(error.response.data.errors);
                 }
@@ -84,9 +98,13 @@ export default function EditContact() {
         });
     };
 
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
+    };
+
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
-    if (isLoading) {
+    if (isLoading || isProfileLoading) {
         return <div>Loading...</div>;
     }
 
@@ -103,7 +121,7 @@ export default function EditContact() {
                             Contact details
                         </Typography>
                         <FormControlLabel
-                            control={<Switch checked={isActive} onChange={(e) => setIsActive(e.target.checked)} disabled={!isEditing} />}
+                            control={<Switch checked={isActive} onChange={(e) => setIsActive(e.target.checked)} disabled={!permissions.canEditContacts || !isEditing} />}
                             label="Active"
                             labelPlacement="start"
                             sx={{ marginLeft: 'auto' }}
@@ -127,7 +145,7 @@ export default function EditContact() {
                                         { label: 'Last name *', name: 'lastName', placeholder: 'Last', autoComplete: 'family-name', value: formData.lastName, required: true },
                                         { label: 'Email *', name: 'email', placeholder: 'name@example.com', autoComplete: 'email', value: formData.email , required: true },
                                         { label: 'Phone *', name: 'phoneNumber', placeholder: '555-123-4567', autoComplete: 'tel', value: formData.phoneNumber, required: true },
-                                        { label: 'Email 2', name: 'emailTwo', placeholder: 'name@example.com', autoComplete: 'email', value: formData.emailTwo , required: true},
+                                        { label: 'Email 2', name: 'emailTwo', placeholder: 'name@example.com', autoComplete: 'email', value: formData.emailTwo },
                                         { label: 'Mobile', name: 'mobileNumber', placeholder: '555-123-4567', autoComplete: 'tel', value: formData.mobileNumber , required: true},
                                     ].map((field, index) => (
                                         <Grid key={index} item xs={12} md={6}>
@@ -147,7 +165,7 @@ export default function EditContact() {
                                                 required={field.required}
                                                 inputProps={field.inputProps}
                                                 sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
-                                                disabled={!isEditing}
+                                                disabled={!permissions.canEditContacts || !isEditing}
                                                 error={!!errors[field.name]}
                                                 helperText={errors[field.name]}
                                             />
@@ -168,7 +186,7 @@ export default function EditContact() {
                                             InputLabelProps={{ shrink: false }}
                                             inputProps={{ multiline: true, rows: isMobile ? 4 : 2 }}
                                             sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
-                                            disabled={!isEditing}
+                                            disabled={!permissions.canEditContacts || !isEditing}
                                             error={!!errors.address}
                                             helperText={errors.address}
                                         />
@@ -188,33 +206,35 @@ export default function EditContact() {
                                             InputLabelProps={{ shrink: false }}
                                             inputProps={{ multiline: true, rows: isMobile ? 4 : 2 }}
                                             sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px', mt: isMobile ? 1 : 0 }}
-                                            disabled={!isEditing}
+                                            disabled={!permissions.canEditContacts || !isEditing}
                                             error={!!errors.addressTwo}
                                             helperText={errors.addressTwo}
                                         />
                                     </Grid>
                                     <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} justifyContent="flex-start" mt={3} sx={{ width: '100%', paddingLeft: '16px' }}>
-                                        {isEditing ? (
-                                            <Button
-                                                type="submit"
-                                                variant="outlined"
-                                                color="primary"
-                                                startIcon={<SaveIcon />}
-                                                sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                                disabled={isUpdating}
-                                            >
-                                                {isUpdating ? 'Updating...' : 'Save'}
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                variant="outlined"
-                                                color="primary"
-                                                startIcon={<EditIcon />}
-                                                sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                                onClick={handleEditClick}
-                                            >
-                                                Edit
-                                            </Button>
+                                        {permissions.canEditContacts && (
+                                            isEditing ? (
+                                                <Button
+                                                    type="submit"
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    startIcon={<SaveIcon />}
+                                                    sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                                    disabled={isUpdating}
+                                                >
+                                                    {isUpdating ? 'Updating...' : 'Save'}
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="outlined"
+                                                    color="primary"
+                                                    startIcon={<EditIcon />}
+                                                    sx={{ mr: isMobile ? 0 : 2, mb: isMobile ? 2 : 0, width: isMobile ? '100%' : '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                                    onClick={handleEditClick}
+                                                >
+                                                    Edit
+                                                </Button>
+                                            )
                                         )}
                                         <Link href='/contacts/contactsTable' passHref>
                                             <Button variant="outlined"
@@ -231,6 +251,11 @@ export default function EditContact() {
                 </Box>
             </Container>
             <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

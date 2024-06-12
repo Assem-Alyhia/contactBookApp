@@ -43,7 +43,7 @@ export default function SetPassword() {
 
     return (
         <Box>
-            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: {xs:'90vh',md:'100vh'}, justifyContent: 'space-between', padding: '0 !important' }}>
                 <Grid container sx={{ flexGrow: 1, padding: 0 }}>
                     <Grid
                         item
@@ -137,8 +137,8 @@ export default function SetPassword() {
                         </Box>
                     </Grid>
                 </Grid>
-                <Footer color='#fff' gap='0 15% 0 10%' />
             </Container>
+                <Footer color='#fff' gap='0 15% 0 10%' marginTop='0%'/>
         </Box>
     );
 }

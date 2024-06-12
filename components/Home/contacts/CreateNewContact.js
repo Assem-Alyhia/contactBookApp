@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Avatar, Grid, useMediaQuery } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Avatar, Grid, Snackbar, Alert, useMediaQuery } from '@mui/material';
 import Footer from '@/components/Utility/Footer';
 import Link from 'next/link';
 import { useAddContactMutation } from '@/pages/api/contacts/addContact';
@@ -11,12 +11,16 @@ export default function CreateNewContact() {
         lastName: '',
         image: null,
         email: '',
-        EmailTwo: '',
+        emailTwo: '',
         phoneNumber: '',
         mobileNumber: '',
         address: '',
         AddressTwo: '',
     });
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const { mutate: addContact, isLoading } = useAddContactMutation();
     const router = useRouter();
@@ -41,12 +45,22 @@ export default function CreateNewContact() {
         e.preventDefault();
         addContact(formData, {
             onSuccess: () => {
+                setSnackbarMessage('Contact added successfully!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
                 router.push('/contacts/contactsTable');
             },
             onError: (error) => {
                 console.error('Error adding contact: ', error);
+                setSnackbarMessage('Error: Email already exists or invalid data.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             },
         });
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     return (
@@ -183,13 +197,13 @@ export default function CreateNewContact() {
                                         </Typography>
                                         <TextField
                                             fullWidth
-                                            id="EmailTwo"
+                                            id="emailTwo"
                                             placeholder="name@example.com"
-                                            name="EmailTwo"
+                                            name="emailTwo"
                                             autoComplete="email"
                                             InputLabelProps={{ shrink: false }}
                                             size="small"
-                                            value={formData.EmailTwo}
+                                            value={formData.emailTwo}
                                             onChange={handleChange}
                                             sx={{ border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
                                         />
@@ -287,6 +301,11 @@ export default function CreateNewContact() {
                 </Box>
             </Container>
             <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' mdPosition='auto' />
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

@@ -11,6 +11,8 @@ import {
     Button,
     Grid,
     IconButton,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import Link from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -21,22 +23,42 @@ import img from '../../../public/images/1.jpg';
 import { useLoginUserMutation } from '@/pages/api/setSignIn/setSignin';
 
 export default function SignIn() {
-    
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { mutate, isLoading, isError } = useLoginUserMutation();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutate({ email, password });
+        mutate(
+            { email, password },
+            {
+                onSuccess: () => {
+                    setSnackbarMessage('You have been logged in successfully !');
+                    setSnackbarSeverity('success');
+                    setOpenSnackbar(true);
+                },
+                onError: (error) => {
+                    setSnackbarMessage(`error : ${error.message}`);
+                    setSnackbarSeverity('error');
+                    setOpenSnackbar(true);
+                },
+            }
+        );
+    };
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
     };
 
     return (
         <Box>
-            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: {xs:'90vh',md:'100vh'}, justifyContent: 'space-between', padding: '0 !important' }}>
                 <Grid container sx={{ flexGrow: 1, padding: 0 }}>
                     <Grid
                         item
@@ -61,7 +83,7 @@ export default function SignIn() {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '5rem 2rem 5rem 8rem' }, margin: 'auto' }}>
+                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '5rem 2rem 5rem 6rem' }, margin: 'auto' }}>
                         <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 1 }}>
                             <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
                         </Box>
@@ -152,7 +174,12 @@ export default function SignIn() {
                     </Grid>
                 </Grid>
             </Container>
-            <Footer color='#fff' gap='0 10%' />
+            <Footer color='#fff' gap='0 10%' marginTop='0%'/>
+            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

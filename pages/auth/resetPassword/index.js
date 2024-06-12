@@ -43,7 +43,7 @@ export default function SetPassword() {
 
     return (
         <Box>
-            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: {xs:'90vh',md:'100vh'}, justifyContent: 'space-between', padding: '0 !important' }}>
                 <Grid container sx={{ flexGrow: 1, padding: 0 }}>
                     <Grid
                         item
@@ -67,7 +67,7 @@ export default function SetPassword() {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '0  7rem' } }}>
+                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: { xs: 'center', md: 'start' } , padding: { xs: '2rem', md: '0  7rem' } }}>
                         <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
                             <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
                         </Box>
@@ -137,8 +137,8 @@ export default function SetPassword() {
                         </Box>
                     </Grid>
                 </Grid>
-                <Footer color='#fff' gap='0 15% 0 10%' />
             </Container>
+                <Footer color='#fff' gap='0 15% 0 10%' marginTop='0%'/>
         </Box>
     );
 }

@@ -15,12 +15,13 @@ const position = [51.505, -0.09];
 
 const MapComponent = () => {
     return (
-        <MapContainer center={position} zoom={13} style={{ height: '300px', width: '100%' }}>
+        <MapContainer center={position} zoom={13} style={{ height: '280px', width: '100%' , margin:' 2.5rem 0 0 0'}} >
         <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            
         />
-        <Marker position={position}>
+        <Marker position={position} >
             <Popup>
             Your location
             </Popup>

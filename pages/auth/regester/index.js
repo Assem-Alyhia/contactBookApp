@@ -1,4 +1,3 @@
-// pages/auth/register.js
 import React, { useState } from 'react';
 import {
     Container,
@@ -13,8 +12,10 @@ import {
     IconButton,
     InputAdornment,
     FormControl,
-    OutlinedInput,
     InputLabel,
+    Snackbar,
+    Alert,
+    OutlinedInput,
 } from '@mui/material';
 import Link from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -30,12 +31,12 @@ export default function Register() {
         firstName: '',
         lastName: '',
         email: '',
-        phoneNumber: '111111111',
+        phoneNumber: '',
         password: '',
         companyName: '',
         vatNumber: '',
         streetOne: '',
-        streetTwo: '',
+        streetTwo: '1111111111',
         city: '',
         state: '',
         zip: '',
@@ -43,6 +44,9 @@ export default function Register() {
     });
 
     const [formErrors, setFormErrors] = useState({});
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const { mutate, isLoading, isError, isSuccess } = useRegisterUserMutation();
 
@@ -61,17 +65,27 @@ export default function Register() {
             onError: (error) => {
                 if (error.errors) {
                     setFormErrors(error.errors);
+                    setSnackbarMessage(`Error: ${Object.values(error.errors).flat().join(', ')}`);
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
                 }
             },
             onSuccess: () => {
+                setSnackbarMessage('Registration successful!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
                 router.push('/dashboard'); // الانتقال إلى صفحة الداشبورد بعد التسجيل الناجح
             }
         });
     };
 
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
+
     return (
         <Box>
-            <Container component="main" maxWidth="xl" sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+            <Container component="main" maxWidth="xl" sx={{ display: 'flex', height:{xs: 'auto' , md:'100vh'}, justifyContent: 'space-between', padding: '0 !important' }}>
                 <Grid container sx={{ flexGrow: 1, padding: 0 }}>
                     <Grid
                         item
@@ -110,7 +124,7 @@ export default function Register() {
                                         Account details
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         autoComplete="fname"
                                         name="firstName"
@@ -126,7 +140,7 @@ export default function Register() {
                                         helperText={formErrors.firstName ? formErrors.firstName[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -141,7 +155,7 @@ export default function Register() {
                                         helperText={formErrors.lastName ? formErrors.lastName[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -156,7 +170,7 @@ export default function Register() {
                                         helperText={formErrors.email ? formErrors.email[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <FormControl fullWidth variant="outlined" size="small" required>
                                         <InputLabel htmlFor="password">Password</InputLabel>
                                         <OutlinedInput
@@ -185,12 +199,12 @@ export default function Register() {
                                     </FormControl>
                                 </Grid>
 
-                                <Grid item xs={12} sm={12}>
+                                <Grid item xs={12} md={12} sm={12}>
                                     <Typography component="h2" variant="h5" className='titleInput' sx={{ opacity: '.4', fontSize: '20px' }}>
                                         Billing details
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -205,7 +219,7 @@ export default function Register() {
                                         helperText={formErrors.companyName ? formErrors.companyName[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -220,7 +234,7 @@ export default function Register() {
                                         helperText={formErrors.vatNumber ? formErrors.vatNumber[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -235,21 +249,21 @@ export default function Register() {
                                         helperText={formErrors.streetOne ? formErrors.streetOne[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         fullWidth
-                                        id="streetTwo"
-                                        label="Street 2 (Optional)"
-                                        name="streetTwo"
-                                        autoComplete="street-address-optional"
+                                        id="phoneNumber"
+                                        label="phoneNumber"
+                                        name="phoneNumber"
+                                        autoComplete="phoneNumber"
                                         size={'small'}
                                         sx={{ "& input": { border: 'solid 1px #E0E0E0', borderRadius: '5px' } }}
                                         onChange={handleChange}
-                                        error={!!formErrors.streetTwo}
-                                        helperText={formErrors.streetTwo ? formErrors.streetTwo[0] : ''}
+                                        error={!!formErrors.phoneNumber}
+                                        helperText={formErrors.phoneNumber ? formErrors.phoneNumber[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -264,7 +278,7 @@ export default function Register() {
                                         helperText={formErrors.city ? formErrors.city[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -279,7 +293,7 @@ export default function Register() {
                                         helperText={formErrors.state ? formErrors.state[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -294,7 +308,7 @@ export default function Register() {
                                         helperText={formErrors.zip ? formErrors.zip[0] : ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={6}>
+                                <Grid item xs={12} md={6} sm={12}>
                                     <TextField
                                         required
                                         fullWidth
@@ -342,8 +356,6 @@ export default function Register() {
                             >
                                 {isLoading ? 'Registering...' : 'Register'}
                             </Button>
-                            {isError && <div>Error occurred during registration.</div>}
-                            {isSuccess && <div>Registration successful!</div>}
                             <Grid container justifyContent="flex-end">
                                 <Grid item sx={{ margin: 'auto' }}>
                                     <Link href="/auth/signIn" variant="body2">
@@ -354,8 +366,13 @@ export default function Register() {
                         </Box>
                     </Grid>
                 </Grid>
-                <Footer color='#fff' gap='0 10%' />
             </Container>
+            <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+            <Footer color='#fff' gap='0 10%' />
         </Box>
     );
 }

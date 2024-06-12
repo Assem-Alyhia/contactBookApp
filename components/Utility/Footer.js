@@ -14,7 +14,7 @@ function Copyright(props) {
     );
 }
 
-const Footer = ({ color = '#fff', gap = '10%', opacity = '0.4', mdPosition = 'fixed' }) => {
+const Footer = ({ color = '#fff', gap = '10%', opacity = '0.4', mdPosition = 'fixed' , marginTop }) => {
     return (
         <Box sx={{
             width: '100%',
@@ -24,7 +24,8 @@ const Footer = ({ color = '#fff', gap = '10%', opacity = '0.4', mdPosition = 'fi
             opacity: opacity,
             position: { xs: 'relative', md: mdPosition },
             bottom: { xs: 'auto', md: '5px' },
-            mt: { xs: 2, md: 0 }, 
+            // mt: { xs: 2, md: 0 }, 
+            marginTop: { xs: marginTop , md: 0 }, 
             '@media (max-width: 700px)': {
                 color: 'black'
             }

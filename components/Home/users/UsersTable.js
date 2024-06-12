@@ -16,17 +16,20 @@ import {
     Card,
     CardContent,
     Grid,
-    IconButton,
-    useMediaQuery
+    useMediaQuery,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import Link from 'next/link';
 import CustomPagination from '../../Utility/CustomPagination';
 import Footer from '@/components/Utility/Footer';
 import { useUsersQuery } from '../../../pages/api/users/getUsers';
-import { useDeleteUserMutation } from '@/pages/api/users/deleteUsers';
+import { useDeleteUsersMutation } from '@/pages/api/users/deleteUsers';
+import { useProfileQuery } from '@/pages/api/users/getProfile';
+import getPermissions from '@/components/Utility/rolesPermissions';
 
 const columns = [
-    { id: 'id', label: 'ID' },
+    { id: 'id', label: 'id' },
     { id: 'firstName', label: 'First Name' },
     { id: 'lastName', label: 'Last Name' },
     { id: 'email', label: 'Email' },
@@ -40,10 +43,17 @@ export default function UsersTable() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const { isLoading, data, refetch } = useUsersQuery();
-    const { mutate: deleteUser, isLoading: isDeleting } = useDeleteUserMutation();
+    const { mutate: deleteUsers, isLoading: isDeleting } = useDeleteUsersMutation();
+    const { data: userProfile, isLoading: isProfileLoading } = useProfileQuery();
+
+    const role = userProfile?.role || 'User';
+    const permissions = getPermissions(role);
+    const userEmail = userProfile?.email;
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
@@ -85,19 +95,37 @@ export default function UsersTable() {
     const isSelected = (id) => selectedUsers.indexOf(id) !== -1;
 
     const handleDelete = () => {
-        selectedUsers.forEach((id) => {
-            deleteUser(id, {
-                onSuccess: () => {
-                    console.log(`User with id ${id} deleted successfully`);
-                    setSelectedUsers((prev) => prev.filter((userId) => userId !== id));
-                    refetch();
-                },
-                onError: (error) => {
-                    console.error('Error deleting user: ', error);
-                },
+        if (role === 'Admin') {
+            const cannotDeleteAdmin = selectedUsers.some((userId) => {
+                const user = data.find((user) => user.id === userId);
+                return user.role === 'Admin';
             });
+
+            if (cannotDeleteAdmin) {
+                setSnackbarMessage('Admins cannot delete other admins.');
+                setSnackbarOpen(true);
+                return;
+            }
+        }
+
+        deleteUsers(selectedUsers, {
+            onSuccess: () => {
+                console.log('Users deleted successfully');
+                setSelectedUsers([]);
+                refetch();
+            },
+            onError: (error) => {
+                console.error('Error deleting users: ', error);
+            },
         });
     };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+        setSnackbarMessage('');
+    };
+
+    const filteredData = data?.filter(user => user.email !== userEmail);
 
     return (
         <Box sx={{ marginTop: '1rem' }}>
@@ -119,24 +147,28 @@ export default function UsersTable() {
                                     size="small"
                                 />
                             </Grid>
-                            <Grid item xs={12}>
-                                <Link href='/users/inviteNewUser'>
-                                    <Button variant="contained" color="primary" fullWidth sx={{ marginBottom: 1 }}>
-                                        Invite New User
+                            {permissions.canInviteUsers && (
+                                <Grid item xs={12}>
+                                    <Link href='/users/inviteNewUser'>
+                                        <Button variant="contained" color="primary" fullWidth sx={{ marginBottom: 1 }}>
+                                            Invite New User
+                                        </Button>
+                                    </Link>
+                                </Grid>
+                            )}
+                            {permissions.canDeleteUsers && (
+                                <Grid item xs={12}>
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        fullWidth
+                                        onClick={handleDelete}
+                                        disabled={isDeleting || selectedUsers.length === 0}
+                                    >
+                                        {isDeleting ? 'Deleting...' : 'Delete'}
                                     </Button>
-                                </Link>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    fullWidth
-                                    onClick={handleDelete}
-                                    disabled={isDeleting || selectedUsers.length === 0}
-                                >
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </Button>
-                            </Grid>
+                                </Grid>
+                            )}
                         </>
                     ) : (
                         <Grid item xs={12} display="flex" justifyContent="space-between" alignItems="center">
@@ -149,20 +181,24 @@ export default function UsersTable() {
                                 sx={{ minHeight: '35px' }}
                             />
                             <Box>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    sx={{ mr: 1, height: '2.5em', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                    onClick={handleDelete}
-                                    disabled={isDeleting || selectedUsers.length === 0}
-                                >
-                                    {isDeleting ? 'Deleting...' : 'Delete'}
-                                </Button>
-                                <Link href='/users/inviteNewUser'>
-                                    <Button variant="contained" color="primary" sx={{ height: '2.5em', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}>
-                                        Invite New User
+                                {permissions.canDeleteUsers && (
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        sx={{ mr: 1, height: '2.5em', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                        onClick={handleDelete}
+                                        disabled={isDeleting || selectedUsers.length === 0}
+                                    >
+                                        {isDeleting ? 'Deleting...' : 'Delete'}
                                     </Button>
-                                </Link>
+                                )}
+                                {permissions.canInviteUsers && (
+                                    <Link href='/users/inviteNewUser'>
+                                        <Button variant="contained" color="primary" sx={{ height: '2.5em', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}>
+                                            Invite New User
+                                        </Button>
+                                    </Link>
+                                )}
                             </Box>
                         </Grid>
                     )}
@@ -173,18 +209,18 @@ export default function UsersTable() {
                     <>
                         {isMobile ? (
                             <Grid container spacing={2}>
-                                {data && data.length > 0 ? data.map((user) => (
+                                {filteredData && filteredData.length > 0 ? filteredData.map((user, index) => (
                                     <Grid item xs={12} key={user.id}>
                                         <Card>
                                             <CardContent>
                                                 <Grid container spacing={2} alignItems="center">
-                                                    <Grid item xs={12} display="flex" justifyContent="space-between">
+                                                    <Grid item xs={12} display="flex" alignItems="center">
                                                         <Checkbox
                                                             checked={isSelected(user.id)}
                                                             onChange={() => handleSelectOne(user.id)}
                                                         />
                                                         <Typography variant="body2" color="textSecondary">
-                                                            ID: {user.id}
+                                                            {index + 1}
                                                         </Typography>
                                                     </Grid>
                                                     <Grid item xs={12} display="flex" justifyContent="center">
@@ -204,11 +240,11 @@ export default function UsersTable() {
                                                     </Grid>
                                                     <Grid item xs={12} display="flex" justifyContent="space-between">
                                                         <Button
-                                                                sx={{
+                                                            sx={{
                                                                 backgroundColor: user.status === 'Active' ? '#D4EDDA' : user.status === 'Pending' ? '#FFF3CD' : user.status === 'Locked' ? '#F8D7DA' : 'default'
                                                             }}
                                                             variant="outlined"
-                                                            color={user.status === 'Active' ? 'success' : user.status === 'Pending' ? 'warning' : user.status === 'Locked' ? 'danger' : 'error'}
+                                                            color={user.status === 'Active' ? 'success' : user.status === 'Pending' ? 'warning' : user.status === 'Locked' ? 'error' : 'default'}
                                                         >
                                                             {user.status}
                                                         </Button>
@@ -230,11 +266,11 @@ export default function UsersTable() {
                             <TableContainer component={Paper}>
                                 <Table>
                                     <TableHead>
-                                        <TableRow>
+                                        <TableRow sx={{borderBottom: 'solid 1px #e0e0e0'}}>
                                             <TableCell padding="checkbox">
                                                 <Checkbox
-                                                    indeterminate={selectedUsers.length > 0 && selectedUsers.length < data.length}
-                                                    checked={data.length > 0 && selectedUsers.length === data.length}
+                                                    indeterminate={selectedUsers.length > 0 && selectedUsers.length < filteredData.length}
+                                                    checked={filteredData.length > 0 && selectedUsers.length === filteredData.length}
                                                     onChange={handleSelectAll}
                                                 />
                                             </TableCell>
@@ -246,7 +282,7 @@ export default function UsersTable() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {data && data.length > 0 ? data.map((user, index) => {
+                                        {filteredData && filteredData.length > 0 ? filteredData.map((user, index) => {
                                             const isItemSelected = isSelected(user.id);
                                             return (
                                                 <TableRow
@@ -268,16 +304,19 @@ export default function UsersTable() {
                                                         <Button
                                                             variant="outlined"
                                                             sx={{
+                                                                width:'93px',
+                                                                fontSize:'14px',
+                                                                textTransform: 'capitalize',
                                                                 backgroundColor: user.status === 'Active' ? '#D4EDDA' : user.status === 'Pending' ? '#FFF3CD' : user.status === 'Locked' ? '#F8D7DA' : 'default'
                                                             }}
-                                                            color={user.status === 'Active' ? 'success' : user.status === 'Pending' ? 'warning' : 'error'}
+                                                            color={user.status === 'Active' ? 'success' : user.status === 'Pending' ? 'warning' : user.status === 'Locked' ? 'error' : 'default'}
                                                         >
                                                             {user.status}
                                                         </Button>
                                                     </TableCell>
                                                     <TableCell>
                                                         <Link href={`/users/editUser?id=${user.id}`} passHref>
-                                                            <Button variant="contained">View</Button>
+                                                            <Button variant="contained" sx={{textTransform: 'capitalize',}}>View</Button>
                                                         </Link>
                                                     </TableCell>
                                                 </TableRow>
@@ -298,6 +337,16 @@ export default function UsersTable() {
                 )}
             </Container>
             <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

@@ -29,15 +29,16 @@ export default function ChangePassword() {
 
     return (
         <Box>
-            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: '100vh', justifyContent: 'space-between', padding: '0 !important' }}>
+            <Container component="main" maxWidth='xl' sx={{ display: 'flex', height: {xs:'90vh',md:'100vh'}, justifyContent: 'space-between', padding: '0 !important'}}>
                 <Grid container sx={{ flexGrow: 1, padding: 0 }}>
                     <Grid
                         item
                         xs={false}
                         sm={4}
-                        md={8}
+                        md={7}
                         sx={{
                             position: 'relative',
+                            flexBasis: '60%',
                             display: { xs: 'none', md: 'block' },
                         }}
                     >
@@ -53,11 +54,11 @@ export default function ChangePassword() {
                             }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '0  7rem' } }}>
-                        <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
+                    <Grid item xs={12} sm={8} md={4} component={Box} sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'start' }, justifyContent: 'center', padding: { xs: '2rem', md: '5rem 2rem 5rem 6rem' }, margin: 'auto' }}>
+                        <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 1 }}>
                             <Image src={logoW} alt="Contact Book Logo" width={100} height={100} />
                         </Box>
-                        <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: '30px', display: { xs: 'none', md: 'block' } }}>
+                        <Typography component="h1" variant="h5" sx={{ display: { xs: 'none', md: 'block' }, fontWeight: 'bold', fontSize: '30px', mb: 3 }}>
                             Change Password
                         </Typography>
                         <Box component="form" noValidate sx={{ mt: 1, width: '100%' }} onSubmit={handleSubmit}>
@@ -93,8 +94,8 @@ export default function ChangePassword() {
                         </Box>
                     </Grid>
                 </Grid>
-                <Footer color='#fff' gap='0 15% 0 10%' />
             </Container>
+            <Footer color='#fff' gap='0 15% 0 10%' marginTop='0%'/>
         </Box>
     );
 }

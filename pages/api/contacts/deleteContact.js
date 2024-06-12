@@ -1,8 +1,9 @@
+// pages/api/contacts/deleteContactsMutation.js
 import axiosInstance from "../axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const deleteContacts = async (id) => {
-    const data = await axiosInstance.delete(`/Contacts/${id}`);
+const deleteContacts = async (ids) => {
+    const data = await axiosInstance.delete(`/Contacts`, { data: ids });
     return data;
 };
 

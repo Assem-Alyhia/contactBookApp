@@ -160,8 +160,8 @@ export default function ExportViaEmail() {
                                     <TableCell>
                                         <Button
                                             sx={{ mr: 1, width:93, height: '2.5em',  borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                            variant="contained"
-                                            color={contact.status === 'Active' ? 'success' : 'default'}
+                                            variant="outlined"
+                                            color={contact.status === 'Active' ? 'success' : 'error'}
                                         >
                                             {contact.status}
                                         </Button>

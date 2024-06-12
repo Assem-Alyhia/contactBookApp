@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -16,14 +17,18 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useProfileQuery } from '@/pages/api/users/getProfile';
-import { logoutUser } from '@/pages/api/users/logout'; 
-import logoW from '../../public/images/logoW.svg'; 
+import { logoutUser } from '@/pages/api/users/logout';
+import logoW from '../../public/images/logoW.svg';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import getPermissions from './rolesPermissions';
 
 const pages = [
-    { name: 'Home', link: '/dashboard' },
-    { name: 'Contacts', link: '/contacts/contactsTable' },
-    { name: 'Company Profile', link: '/company' },
-    { name: 'Users', link: '/users/usersTable' }
+    { name: 'Home', link: '/dashboard', permission: 'canViewHome' },
+    { name: 'Contacts', link: '/contacts/contactsTable', permission: 'canManageContacts' },
+    { name: 'Company Profile', link: '/company', permission: 'canViewCompany' },
+    { name: 'Users', link: '/users/usersTable', permission: 'canManageUsers' }
 ];
 
 const settings = [
@@ -32,20 +37,20 @@ const settings = [
 ];
 
 function Navbar() {
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
     const router = useRouter();
     const { data: userProfile, isLoading } = useProfileQuery(); // جلب بيانات المستخدم
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
+    if (isLoading) {
+        return null; // عرض مؤقت أو عنصر تحميل
+    }
+
+    const role = userProfile?.role || 'Owner'; // افتراض الدور owner إذا لم يتم تعيين دور
+    const permissions = getPermissions(role);
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
     };
 
     const handleCloseUserMenu = () => {
@@ -66,136 +71,122 @@ function Navbar() {
         handleCloseUserMenu();
     };
 
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setDrawerOpen(open);
+    };
+
+    const drawerList = () => (
+        <Box
+            sx={{ width: '80vw' }} // زيادة عرض القائمة الجانبية
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+        >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#007bff', color: 'white', p: 2 }}>
+                <Image src={logoW} alt="Contact Book Logo" width={160} height={34} />
+                <IconButton onClick={toggleDrawer(false)} sx={{ color: 'white' }}>
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+            <List>
+                {pages.map((page) => (
+                    permissions[page.permission] && (
+                        <Link href={page.link} passHref legacyBehavior key={page.name}>
+                            <MenuItem sx={{ borderBottom: '1px solid #ddd', py: 2 }}>
+                                <Typography textAlign="center" sx={{ color: 'black', fontSize: '16px', textDecoration: 'none' ,fontWeight:'500',}}>
+                                    {page.name}
+                                </Typography>
+                            </MenuItem>
+                        </Link>
+                    )
+                ))}
+
+                <MenuItem sx={{ borderBottom: '1px solid #ddd', py: 2 ,fontWeight:'500'}}>
+                    <AccountCircleIcon sx={{ mr: 1 }} />
+                    {userProfile?.username || 'Username'}
+                </MenuItem>
+                {settings.map((setting) => (
+                    setting.name === 'My Profile' ? (
+                        <MenuItem key={setting.name} onClick={handleMyProfileClick} sx={{ borderBottom: '1px solid #ddd', py: 2 }}>
+                            <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' ,fontWeight:'500'}}>
+                                {setting.name}
+                            </Typography>
+                        </MenuItem>
+                    ) : (
+                        <MenuItem key={setting.name} onClick={setting.action ? handleLogout : handleCloseUserMenu} sx={{ borderBottom: '1px solid #ddd', py: 2 }}>
+                            <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' ,fontWeight:'500'}}>
+                                {setting.name}
+                            </Typography>
+                        </MenuItem>
+                    )
+                ))}
+            </List>
+        </Box>
+    );
+
     return (
         <AppBar position="static">
             <Container maxWidth="lg">
                 <Toolbar disableGutters>
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', mr: 7 }}>
+                    <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', mr: 2 }}>
+                        <IconButton
+                            size="large"
+                            aria-label="open drawer"
+                            onClick={toggleDrawer(true)}
+                            color="inherit"
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Box>
+
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' }, justifyContent: { xs: 'center', md: 'flex-start' }, alignItems: 'center' , width:'8rem',    flexGrow: '.5'}}>
                         <Link href='/dashboard'>
                             <Image src={logoW} alt="Contact Book Logo" width={160} height={34} />
                         </Link>
                     </Box>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, justifyContent: 'center' }}>
-                        <Image src={logoW} alt="Contact Book Logo" width={160} height={34} />
-                    </Box>
-
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                '& .MuiPaper-root': {
-                                    width: '100%', // Increase width to fill the screen
-                                },
-                            }}
-                        >
-                            <Box sx={{ backgroundColor: '#007bff', color: 'white', p: 2, textAlign: 'start' }}>
-                                <Image src={logoW} alt="Contact Book Logo" style={{ width: '100%' }} />
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', display: { xs: 'none', md: 'none' } }}>CONTACT BOOK</Typography>
-                            </Box>
-                            {pages.map((page) => (
-                                <Link href={page.link} passHref legacyBehavior key={page.name} >
-                                    <MenuItem onClick={handleCloseNavMenu} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
-                                        <Typography textAlign="center" sx={{ color: 'black', fontSize: '16px', textDecoration: 'none' }}>
-                                            {page.name}
-                                        </Typography>
-                                    </MenuItem>
-                                </Link>
-                            ))}
-                            <MenuItem key="username" onClick={handleCloseNavMenu} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
-                                <AccountCircleIcon sx={{ mr: 1 }} />
-                                Username
-                            </MenuItem>
-                            {settings.map((setting) => (
-                                setting.name === 'My Profile' ? (
-                                    <MenuItem key={setting.name} onClick={handleMyProfileClick} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
-                                        <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' }}>
-                                            {setting.name}
-                                        </Typography>
-                                    </MenuItem>
-                                ) : (
-                                    <MenuItem key={setting.name} onClick={setting.action ? handleLogout : handleCloseUserMenu} sx={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', py: 1 }}>
-                                        <Typography textAlign="center" sx={{ pl: 3, color: 'black', fontSize: '16px', textDecoration: 'none' }}>
-                                            {setting.name}
-                                        </Typography>
-                                    </MenuItem>
-                                )
-                            ))}
-                        </Menu>
-                    </Box>
-
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
-                            <Link href={page.link} passHref legacyBehavior key={page.name}>
-                                <Button
-                                    onClick={handleCloseNavMenu}
-                                    sx={{
-                                        mr: 4,
-                                        my: 2,
-                                        color: 'white',
-                                        textTransform: 'capitalize',
-                                        display: 'block',
-                                        opacity: 0.7,
-                                        fontSize: '12px',
-                                        textDecoration: 'none', 
-                                        '&:hover': {
-                                            opacity: 1,
-                                            textDecoration: 'none'
-                                        },
-                                    }}
-                                >
-                                    {page.name}
-                                </Button>
-                            </Link>
+                            permissions[page.permission] && (
+                                <Link href={page.link} passHref legacyBehavior key={page.name}>
+                                    <Button
+                                        onClick={toggleDrawer(false)}
+                                        sx={{
+                                            mr: 4,
+                                            my: 2,
+                                            color: 'white',
+                                            textTransform: 'capitalize',
+                                            display: 'block',
+                                            opacity: 0.7,
+                                            fontSize: '12px',
+                                            textDecoration: 'none',
+                                            '&:hover': {
+                                                opacity: 1,
+                                                textDecoration: 'none'
+                                            },
+                                        }}
+                                    >
+                                        {page.name}
+                                    </Button>
+                                </Link>
+                            )
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
-                                    <Avatar alt="Remy Sharp" src="/images/1.jpg" sx={{ mr: 1 }} />
-                                    <Typography
-                                        variant="body1"
-                                        color="inherit"
-                                        sx={{ my: 2, color: 'white', display: 'block', fontSize: 16 }}
-                                    >
-                                        User name
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: { md: 'none', xs: 'none' }, alignItems: 'center' }}>
-                                    <Avatar alt="Remy Sharp" src="/images/1.jpg" sx={{ mr: 1 }} />
-                                    <Typography
-                                        variant="body1"
-                                        color="inherit"
-                                        sx={{ my: 2, color: 'white', display: 'block', fontSize: 16 }}
-                                    >
-                                        User name
-                                    </Typography>
-                                </Box>
+                                <Avatar alt="User Avatar" src={userProfile?.avatar || '/images/default-avatar.jpg'} sx={{ mr: 1 }} />
+                                <Typography
+                                    variant="body1"
+                                    color="inherit"
+                                    sx={{ my: 2, color: 'white', display: { xs: 'none', md: 'block' }, fontSize: 16 }}
+                                >
+                                    {userProfile?.username || 'User name'}
+                                </Typography>
                             </IconButton>
                         </Tooltip>
                         <Menu
@@ -233,6 +224,13 @@ function Navbar() {
                     </Box>
                 </Toolbar>
             </Container>
+            <Drawer
+                anchor="left"
+                open={drawerOpen}
+                onClose={toggleDrawer(false)}
+            >
+                {drawerList()}
+            </Drawer>
         </AppBar>
     );
 }

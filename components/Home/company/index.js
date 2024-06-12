@@ -3,7 +3,7 @@ import { Container, Box, Typography, TextField, Button, Grid, Paper, MenuItem, S
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import Footer from '@/components/Utility/Footer';
-import Map from './Map';
+// import Map from './MapComponent';
 import { useCompanyProfileQuery } from '@/pages/api/company/getCompany';
 import { useUpdateCompanyMutation } from '@/pages/api/company/putCompany';
 import { useProfileQuery } from '@/pages/api/users/getProfile';
@@ -139,11 +139,11 @@ export default function CompanyProfile() {
                             </Grid>
                         </Grid>
                         <Grid item xs={12} md={5} sx={{ display: isMobile ? 'none' : 'flex', justifyContent: 'center', alignItems: 'center', padding: { xs: '0px', md: '0 3rem !important' } }}>
-                            <Map />
+                            {/* <Map /> */}
                         </Grid>
                         {isMobile && (
                             <Grid item xs={12}>
-                                <Map />
+                                {/* <Map /> */}
                             </Grid>
                         )}
                         <Box display="flex" justifyContent={isMobile ? 'center' : 'flex-start'} sx={{ mt: 3, ml: isMobile ? 0 : 2 }}>

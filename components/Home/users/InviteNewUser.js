@@ -173,22 +173,24 @@ export default function InviteNewUser() {
                                     <MenuItem value="user">Regular User</MenuItem>
                                 </TextField>
                             </Grid>
-                            <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' }}>
+                            <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' , flexWrap:{xs:'wrap'} , width:{xs:'100%'}}} >
                                 <Button
                                     type="submit"
                                     variant="contained"
                                     color="primary"
-                                    sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                    sx={{ mt:{ xs:2 , md:0 } , mr:{ xs:0 , md:2 } ,  width:{xs:'100%' , md: '180px'}, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
                                 >
                                     Invite
                                 </Button>
-                                <Link href='/users/usersTable'>
-                                    <Button variant="outlined"
-                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </Link>
+                                <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+                                    <Link href='/users/usersTable'>
+                                        <Button variant="outlined"
+                                            sx={{mt: { xs: 2, md: 0 },mr: { xs: 0, md: 2 }, width: { xs: '100%', md: '180px' }, height: '2.5em', py: '0px', borderRadius: '4px', textTransform: 'capitalize', fontSize: '14px' }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Link>
+                                </Box>
                             </Box>
                         </Grid>
                     </form>

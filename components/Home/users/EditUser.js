@@ -44,6 +44,8 @@ export default function EditUser() {
         }
     }, [userData]);
 
+
+
     const handleChange = (e) => {
         const { name, value, checked, type } = e.target;
         setFormData((prev) => ({
@@ -87,15 +89,10 @@ export default function EditUser() {
     }
 
     const canEditUser = () => {
-        if (profileData.role === 'Owner') {
-            return true;
-        } else if (profileData.role === 'Admin' && formData.role === 'User') {
-            return true;
-        } else if (profileData.id === userData.id) {
-            return true;
-        }
-        return false;
+        return profileData.role === 'Owner' || profileData.role === 'Admin' || profileData.id === userData.id;
     };
+
+    const isSelfEdit = profileData.id === userData.id;
 
     return (
         <Box sx={{ marginTop: '1rem' }}>
@@ -211,20 +208,20 @@ export default function EditUser() {
                                     onChange={handleChange}
                                     size={'small'}
                                     sx={{ "& .MuiInputBase-root": { textAlign: 'left' }, border: 'solid 1px #E0E0E0', borderRadius: '5px' }}
-                                    disabled={!isEditing}
+                                    disabled={!isEditing || isSelfEdit} // Disable if the user is editing their own profile
                                 >
                                     <MenuItem value="Admin">Admin</MenuItem>
                                     <MenuItem value="User">Regular User</MenuItem>
                                 </TextField>
                             </Grid>
-                            <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' }}>
+                            <Box display="flex" justifyContent="flex-start" mt={3} sx={{ paddingLeft: '24px' , flexWrap:{xs:'wrap'} , width:{xs:'100%'}}}>
                                 {isEditing ? (
                                     <Button
                                         type="submit"
                                         variant="outlined"
                                         color="primary"
                                         startIcon={<SaveIcon />}
-                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                        sx={{ mt:{ xs:2 , md:0 } , mr:{ xs:0 , md:2 }, width:{xs:'100%' , md: '180px'}, height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
                                         disabled={isUpdating}
                                     >
                                         {isUpdating ? 'Updating...' : 'Save'}
@@ -235,27 +232,37 @@ export default function EditUser() {
                                             variant="outlined"
                                             color="primary"
                                             startIcon={<EditIcon />}
-                                            sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
+                                            sx={{mt:{ xs:2 , md:0 } , mr:{ xs:0 , md:2 } ,  width:{xs:'100%' , md: '180px'}, height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px', borderRadius: '4px' }}
                                             onClick={handleEditClick}
                                         >
                                             Edit
                                         </Button>
                                     )
                                 )}
-                                <Link href='/users/usersTable' passHref>
-                                    <Button variant="outlined"
-                                        sx={{ mr: 2, width: '180px', height: '2.5em', py: '0px', textTransform: 'capitalize', fontSize: '14px' }}
-                                    >
+                                <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+                                    <Link href='/users/usersTable' passHref>
+                                        <Button variant="outlined"
+                                        sx={{
+                                            mt: { xs: 2, md: 0 },
+                                            mr: { xs: 0, md: 2 },
+                                            width: { xs: '100%', md: '180px' },
+                                            height: '2.5em',
+                                            py: '0px',
+                                            textTransform: 'capitalize',
+                                            fontSize: '14px'
+                                        }}
+                                        >
                                         Back
-                                    </Button>
-                                </Link>
+                                        </Button>
+                                    </Link>
+                                </Box>
                             </Box>
                         </Grid>
                     </Box>
                 </Box>
             </Container>
             <Footer color='#000' gap='0 50% 0 10%' opacity='0.3' />
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+            <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
                     {snackbarMessage}
                 </Alert>

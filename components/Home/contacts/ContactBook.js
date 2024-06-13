@@ -24,7 +24,7 @@ export default function ContactBook() {
 
     return (
         <Box >
-        <Container component="main" maxWidth="md"  sx={{ display: 'flex', flexDirection: 'column', padding: '0 !important' ,width : '583px' , margin:'auto'}}>
+        <Container component="main" maxWidth="md"  sx={{ display: 'flex', flexDirection: 'column', padding: '0 !important' ,width :{xs:'100%' , md:'583px'} , margin:'auto'}}>
             <TableContainer component={Paper}  sx={{ boxShadow: '0px 3px 15px rgba(0,0,0,0.2)' , padding : '0 1rem' ,margin:'3rem 0 0 0'}}>
                 <Box sx={{ margin: '0 auto', textAlign: 'center' }}>
                     <Image src={logoWB} alt="Contact Book Logo" width={200} height={130}/>
@@ -60,7 +60,7 @@ export default function ContactBook() {
                 </Typography>
             </TableContainer>
         </Container>
-        <Footer  color = '#000' gap = '0 40% 0 10%' opacity='0.3' mdPosition='fixed'/>
+        <Footer  color = '#000' gap = '0 40% 0 10%' opacity='0.3' marginTop='15%' mdPosition='fixed'/>
         </Box>
     );
 }
